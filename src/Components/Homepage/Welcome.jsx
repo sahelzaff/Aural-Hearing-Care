@@ -37,7 +37,7 @@ const Welcome = () => {
                         <div className='bg-white flex flex-col items-center justify-center border-[6px] border-[#f4f4f4] h-[500px] w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
                             <img src={assets.hearing_care} className='w-16 pb-5' alt="" />
                             <h1 className='font-outfit font-bold text-2xl text-auralyellow pb-2'>Hearing Care Tailored Solutions</h1>
-                            <p className='font-poppins text-[16px] pb-10'>Our selection includes hearing aids from the industry's top-rated manufacturers in the hearing technology field.</p>
+                            <p className='font-poppins text-[16px] pb-10'>Our selection includes hearing aids from the industry&apos;s top-rated manufacturers in the hearing technology field.</p>
 
                             <button>
                                 <span className='font-montserrat text-white text-lg'>Learn More</span>
