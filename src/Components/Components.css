@@ -1,105 +1,145 @@
 /* Navbar Menu items */
-  #underline2 {
-    position: relative;
-    text-decoration: none;
-    display: inline-block;
-  }
-  
-  #underline2::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: 0;
-    height: 2px; 
-    background-color: #04adf0; 
-    border-radius: 50px;
-    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
-    transform: translateX(-50%);
-  }
-  
-  #underline2:hover::after {
-    width: 100%;
-  }
+#underline2 {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
+}
 
-  /* Slider */
+#underline2::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #04adf0;
+  border-radius: 50px;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: translateX(-50%);
+}
 
- 
+#underline2:hover::after {
+  width: 100%;
+}
+
+/* Slider */
+
+
 .carousel-container {
   position: relative;
+  overflow: hidden;
 }
 
-.splide {
+.splide__slide {
   position: relative;
-  z-index: 1;
 }
 
-.carousel-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40%;
-  height: 100%;
-  background-color: #fff;
-  opacity: 0.8;
-  color: black;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  /* justify-content: center; */
-  box-sizing: border-box;
-  z-index: 2;
+.carousel-image-container {
+  position: relative;
 }
 
 .carousel-image {
   width: 100%;
   height: auto;
   object-fit: cover;
+  animation: scaleImage 10s infinite alternate; /* Apply scaling animation */
 }
 
-.carousel-text h2 {
-  margin: 0;
-  font-size: 24px;
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  animation: scaleImage 10s infinite alternate; /* Apply scaling animation */
+  z-index: 1;
 }
 
-.carousel-text p {
-  margin-top: 10px;
-  font-size: 16px;
+@keyframes scaleImage {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+.carousel-overlay-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  padding:0 3rem;
+  padding-top: 8rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.century {
+  font-family: century-gothic;
 }
 
 /* Button Welcome */
-/* From Uiverse.io by alexmaracinaru */ 
 button {
-    cursor: pointer;
-    font-weight: 700;
-    font-family: Helvetica,"sans-serif";
-    transition: all .2s;
-    padding: 10px 20px;
-    border-radius: 100px;
-    background: #afcc1c;
-    border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    font-size: 15px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: Helvetica, "sans-serif";
+  transition: all .2s;
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: #afcc1c;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+button:hover {
+  background: #afcc1c;
+}
+
+button>svg {
+  width: 34px;
+  margin-left: 10px;
+  transition: transform .3s ease-in-out;
+}
+
+button:hover svg {
+  transform: translateX(5px);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+@keyframes rotate-up {
+  0% {
+      transform: translateY(100%) rotate(0deg);
+      opacity: 0;
   }
-  
-  button:hover {
-    background: #afcc1c;
+  50% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
   }
-  
-  button > svg {
-    width: 34px;
-    margin-left: 10px;
-    transition: transform .3s ease-in-out;
+  100% {
+      transform: translateY(-100%) rotate(0deg);
+      opacity: 0;
   }
-  
-  button:hover svg {
-    transform: translateX(5px);
-  }
-  
-  button:active {
-    transform: scale(0.95);
-  }
-  
-  
-  
+}
+
+/* Basic styles for the container and text alignment */
+
+
+/* Icon and Text transition styles */
+.transition-transform {
+  transition: transform 1s ease-in-out;
+}
+
+.transition-opacity {
+  transition: opacity 1s ease-in-out;
+}
+

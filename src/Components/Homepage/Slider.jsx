@@ -10,17 +10,16 @@ const Carousel = () => {
 
   useEffect(() => {
     const splide = new Splide('.splide', {
-      type: 'loop',
+      type: 'fade',
+      heightRatio: 0.5, // Optional, adjust if needed
       perPage: 1,
       autoplay: true,
       interval: 4000,
       pagination: false,
       arrows: false,
-      breakpoints: {
-        800: {
-          perPage: 1
-        }
-      }
+      rewind: true, 
+      pauseOnHover: false, // Disable pausing on hover
+
     });
 
     splide.on('move', () => {
@@ -60,24 +59,24 @@ const Carousel = () => {
           <ul className="splide__list">
             {slides.map((slide, index) => (
               <li key={index} className="splide__slide">
-                <img src={slide.img} className='carousel-image' alt={`Slide ${index + 1}`} />
+                <div className="carousel-image-container">
+                  <img src={slide.img} className='carousel-image' alt={`Slide ${index + 1}`} />
+                  <div className="carousel-overlay"></div>
+                </div>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <div className="carousel-overlay">
+      <div className="carousel-overlay-content">
         <div className="carousel-text">
           <div className='py-20'>
-            <div className='w-full flex justify-center'>
-              <img src={assets.logo} className='max-w-72 mr-10' alt="" />
-            </div>
             <div>
-              <h1 className='font-outfit text-[2.6rem]  text-auralyellow font-bold py-2'>
+              <h1 className='text-[45px] text-slate-50 font-normal py-2 century'>
                 {slides[activeSlide].title}
               </h1>
-              <p className='font-poppins text-lg text-black'>
+              <p className='century text-lg text-white'>
                 {slides[activeSlide].description}
               </p>
               <div className='py-10'>

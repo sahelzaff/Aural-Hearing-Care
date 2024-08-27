@@ -1,9 +1,9 @@
-import React from 'react';
-import VisitCard from './VisitCard';
-import { FaPhoneAlt } from "react-icons/fa";
+'use client'
+import React, { useState, useEffect } from 'react';
+import '../Components.css'
 import assets from '../../../public/assets/assets';
 
-const First_visit = () => {
+const FirstVisit = () => {
     const visitDetails = [
         {
             title: 'Case History',
@@ -40,12 +40,25 @@ const First_visit = () => {
             description: 'We’ll establish a follow-up schedule to ensure your treatment and hearing aids are working optimally for you.',
             image: assets.schedule,
         },
-
     ];
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % visitDetails.length);
+        }, 5000); // Change every 5 seconds
+
+        return () => clearInterval(interval);
+    }, [visitDetails.length]);
+
+    const handleDotClick = (index) => {
+        setCurrentIndex(index);
+    };
 
     return (
         <div className="w-full max-w-screen-2xl h-full px-16 py-20">
-            <div>
+            <div className="text-center">
                 <h1 className="text-auralyellow text-6xl font-bold font-outfit text-center w-full">
                     What to expect during your first Visit
                 </h1>
@@ -54,23 +67,70 @@ const First_visit = () => {
                 </p>
             </div>
 
-            {visitDetails.map((detail, index) => (
-                <VisitCard
-                    key={index}
-                    title={detail.title}
-                    description={detail.description}
-                    image={detail.image}
-                    alignment={index % 2 === 0 ? 'left' : 'right'}
-                />
-            ))}
+            <div className="relative flex flex-row h-[200px] mt-10 rounded-xl bg-auralblue">
+                {/* Left Side - Icons */}
+                <div className="w-1/3 flex flex-col items-center justify-center relative overflow-hidden">
+                    {visitDetails.map((detail, index) => (
+                        <img
+                            key={index}
+                            src={detail.image}
+                            alt={detail.title}
+                            className={`absolute transition-transform  duration-1000 ease-in-out ${
+                                index === currentIndex ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+                            }`}
+                            style={{ width: '120px' }}
+                        />
+                    ))}
+                </div>
 
-            <div className=' pt-10 flex flex-row items-center justify-center'>
+                {/* Right Side - Text */}
+                <div className="w-full flex flex-col justify-center">
+                    {visitDetails.map((detail, index) => (
+                        <div
+                            key={index}
+                            className={`transition-opacity duration-1000 ease-in-out ${
+                                index === currentIndex ? 'opacity-100' : 'opacity-0'
+                            } absolute`}
+                        >
+                            <h2 className="text-4xl font-bold text-auralyellow font-outfit mb-2">{detail.title}</h2>
+                            <p className="text-lg font-poppins text-white">{detail.description}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className='flex flex-row space-x-1 absolute top-4 left-4'>
+                    <div className='bg-white w-4 h-4 rounded-full'></div>
+                    <div className='bg-white w-4 h-4 rounded-full'></div>
+                    <div className='bg-white w-4 h-4 rounded-full'></div>
+                </div>
+            </div>
 
-                <button type="button" className=' font-medium flex flex-row gap-2 items-center text-white py-3 px-3 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out text-3xl '> <img src={assets.books} className='w-10' alt="" srcset="" /> <span className='text-xl font-montserrat font-semibold'>Hearing Resource</span></button>
+            {/* Navigation Dots */}
+            <div className="flex justify-center items-center mt-8">
+                {visitDetails.map((_, index) => (
+                    <div
+                        key={index}
+                        className={`w-4 h-4 mx-2 rounded-full cursor-pointer transition-all duration-300 ease-in-out flex items-center justify-center ${
+                            index === currentIndex
+                                ? 'bg-auralyellow border-2 border-white'
+                                : 'bg-transparent border-2 border-gray-400'
+                        }`}
+                        onClick={() => handleDotClick(index)}
+                    >
+                        {index === currentIndex && (
+                            <div className="w-2 h-2 rounded-full bg-auralyellow"></div>
+                        )}
+                    </div>
+                ))}
+            </div>
 
+            <div className='pt-10 flex flex-row items-center justify-center'>
+                <button type="button" className='font-medium flex flex-row gap-2 items-center text-white py-3 px-3 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out text-3xl'>
+                    <img src={assets.books} className='w-10' alt="" /> 
+                    <span className='text-xl font-montserrat font-semibold'>Hearing Resource</span>
+                </button>
             </div>
         </div>
     );
 };
 
-export default First_visit;
+export default FirstVisit;
