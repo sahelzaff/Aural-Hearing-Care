@@ -47,7 +47,7 @@ const FirstVisit = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % visitDetails.length);
-        }, 5000); // Change every 5 seconds
+        }, 3000); 
 
         return () => clearInterval(interval);
     }, [visitDetails.length]);

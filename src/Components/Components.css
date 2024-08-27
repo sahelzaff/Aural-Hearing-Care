@@ -131,10 +131,8 @@ button:active {
   }
 }
 
-/* Basic styles for the container and text alignment */
 
 
-/* Icon and Text transition styles */
 .transition-transform {
   transition: transform 1s ease-in-out;
 }

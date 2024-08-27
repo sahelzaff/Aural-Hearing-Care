@@ -1,3 +1,4 @@
+import Footer from '@/Components/Global Components/Footer'
 import Navbar from '@/Components/Global Components/Navbar'
 import TopbarBelow from '@/Components/Global Components/TopbarBelow'
 import BrandLogoSlider from '@/Components/Homepage/Brand_logo_slider'
@@ -15,7 +16,7 @@ const page = () => {
     <Welcome/>
     <BrandLogoSlider/>
     <First_visit/>
- 
+    <Footer/>
     </>
   )
 }
