@@ -49,7 +49,7 @@ const FirstVisit = () => {
         const options = {
             root: null, // viewport
             rootMargin: '0px',
-            threshold: 0.5, // Adjust this if necessary
+            threshold: 0.25, // Adjust this to make highlighting more gradual
         };
 
         const observer = new IntersectionObserver((entries) => {
@@ -75,9 +75,9 @@ const FirstVisit = () => {
     }, [currentIndex]);
 
     return (
-        <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-8 py-16 bg-gray-100 rounded-lg shadow-lg">
+        <div className="w-3/4 mx-auto px-4 sm:px-8 py-16 bg-gray-100 rounded-lg shadow-lg">
             <div className="text-center mb-8">
-                <h1 className="text-auralyellow text-3xl sm:text-4xl font-bold font-outfit">
+                <h1 className="text-auralyellow text-3xl sm:text-5xl font-bold font-outfit">
                     What to expect during your first Visit
                 </h1>
                 <p className="font-poppins text-base text-gray-500 pt-2">
@@ -85,40 +85,33 @@ const FirstVisit = () => {
                 </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 bg-[#f4f4f4] p-8 rounded-lg shadow-md w-full mx-auto">
-                {/* Left Side - Icons */}
-                <div className="flex flex-col items-center sm:items-end justify-between space-y-6">
-                    {visitDetails.map((detail, index) => (
-                        <img
-                            key={index}
-                            src={detail.image}
-                            alt={detail.title}
-                            className={`transition-all duration-300 ease-in-out ${
-                                index === currentIndex ? 'filter-none' : 'grayscale'
-                            }`}
-                            style={{ width: '80px', marginBottom: '20px' }} // Adjusted margin for better alignment
-                        />
-                    ))}
-                </div>
-
-                {/* Right Side - Texts */}
-                <div className="flex flex-col space-y-4 w-full">
+            <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 bg-[#f4f4f4] p-8 rounded-lg shadow-md">
+                <div className="flex flex-col space-y-6 w-full">
                     {visitDetails.map((detail, index) => (
                         <div
                             key={index}
                             ref={(el) => sectionRefs.current[index] = el} // Set reference to each section
-                            className={`transition-all duration-300 ease-in-out p-4 rounded-lg ${
+                            className={`flex items-center p-4 rounded-lg transition-all duration-700 ease-in-out ${
                                 index === currentIndex ? 'bg-auralblue text-white' : 'bg-gray-200 text-gray-700'
                             }`}
                         >
-                            <h2 className="text-lg font-bold mb-2">{detail.title}</h2>
-                            <p className="text-sm">{detail.description}</p>
+                            <img
+                                src={detail.image}
+                                alt={detail.title}
+                                className={`transition-all duration-700 ease-in-out ${
+                                    index === currentIndex ? 'filter-none' : 'grayscale'
+                                }`}
+                                style={{ width: '60px', marginRight: '16px' }} // Adjusted icon size and margin
+                            />
+                            <div>
+                                <h2 className="text-lg font-bold mb-2">{detail.title}</h2>
+                                <p className="text-sm">{detail.description}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Call to Action Button */}
             <div className="pt-10 flex justify-center">
                 <button type="button" className='font-medium flex flex-row gap-2 items-center text-white py-3 px-4 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out text-xl'>
                     <img src={assets.books} className='w-6' alt="" /> 
