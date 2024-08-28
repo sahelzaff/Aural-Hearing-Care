@@ -23,6 +23,7 @@ const assets = {
     hearing_aid: 'assets/hearing_aid.png',
     schedule: 'assets/schedule.png',
     books: 'assets/books.png',
+    request_callback: 'assets/request_callback.png',
     logowhite: 'assets/logowhite.webp',
   };
   

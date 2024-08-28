@@ -11,7 +11,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 
 const TopbarBelow = () => {
     return (
-        <div className='w-full max-w-screen-2xl h-auto py-3 px-10 bg-auralblue'>
+        <div className='w-full h-auto py-3 px-10 bg-auralyellow Homepage'>
             <div className='flex flex-row items-center justify-between'>
                 <div className='flex flex-row items-center'>
 

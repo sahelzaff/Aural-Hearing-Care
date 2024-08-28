@@ -20,13 +20,13 @@ const Footer = () => {
         <div>
 
             <div
-                className="relative h-[85vh] py-10 overflow-hidden bg-fixed bg-center bg-cover"
-                style={{ backgroundImage: `url(${assets.main_banner_1})` }}
+                className="relative h-auto py-20 overflow-hidden bg-fixed bg-center bg-cover"
+                style={{ backgroundImage: `url(${assets.request_callback})` }}
             >
                 <div className="absolute inset-0 bg-black opacity-50"></div>
                 <div className="relative z-10 flex items-center justify-center h-full w-full">
                     {!formSubmitted ? (
-                        <form onSubmit={handleSubmit(onSubmit)} className="bg-white text-black py-10 w-[600px] px-10 rounded-lg shadow-lg h-[73dvh]">
+                        <form onSubmit={handleSubmit(onSubmit)} className="bg-white text-black py-10 w-[600px] px-10 rounded-lg shadow-lg h-auto">
                             <h2 className="text-4xl font-semibold font-outfit text-center text-auralyellow">Request a Call Back</h2>
                             <div className="mt-4">
                                 <label className="block mb-1 text-sm font-medium font-poppins">Name</label>
@@ -63,7 +63,7 @@ const Footer = () => {
                             </button>
                         </form>
                     ) : (
-                        <div className="flex flex-col items-center justify-center bg-white h-[73dvh] py-10 w-[600px] px-10 rounded-lg shadow-lg">
+                        <div className="flex flex-col items-center justify-center bg-white h-auto py-10 w-[600px] px-10 rounded-lg shadow-lg">
                             <div className="bg-green-500 text-white font-bold p-4 rounded-full">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

@@ -70,13 +70,13 @@ const Carousel = () => {
       </div>
 
       <div className="carousel-overlay-content">
-        <div className="carousel-text">
+        <div className="carousel-text content pr-96">
           <div className='py-20'>
             <div>
-              <h1 className='text-[45px] text-slate-50 font-normal py-2 century'>
+              <h1 className='text-[45px] text-slate-50 font-semibold py-6 tracking-wider century'>
                 {slides[activeSlide].title}
               </h1>
-              <p className='century text-lg text-white'>
+              <p className='century text-lg text-white pr-12'>
                 {slides[activeSlide].description}
               </p>
               <div className='py-10'>

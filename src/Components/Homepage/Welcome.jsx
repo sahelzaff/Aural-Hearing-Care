@@ -5,7 +5,7 @@ import '../Components.css'
 
 const Welcome = () => {
     return (
-        <div className="relative h-auto flex  justify-center text-center overflow-hidden py-10 mt-10">
+        <div className="relative h-max flex  justify-center text-center overflow-hidden py-10 mt-10">
 
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -13,13 +13,13 @@ const Welcome = () => {
             ></div>
 
 
-            <div className="relative z-10 ">
+            <div className="relative z-10 welcome">
                 <h2 className='text-6xl font-outfit text-auralyellow text-center font-bold'>Welcome to Aural Hearing Care</h2>
                 <p className='text-lg font-poppins text-gray-400 text-center pt-1 '>Learn how our team provides personalized support to meet your hearing needs.</p>
 
                 <div className='w-full pt-16'>
                     <div className=' grid grid-cols-3 gap-10 py-10'>
-                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-[#f4f4f4] h-[400px] w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
+                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-auralblue h-[400px] hover:h-[500px] w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
                             <img src={assets.hearing_testing} className='w-16 pb-5' alt="" />
                             <h1 className='font-outfit font-bold text-2xl text-auralyellow pb-2'>Hearing Testing</h1>
                             <p className='font-poppins text-[16px] pb-10'>With our expert audiologists, receive a complete hearing assessment to accurately gauge your hearing condition.</p>
@@ -34,7 +34,7 @@ const Welcome = () => {
 
 
                         </div>
-                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-[#f4f4f4] h-[500px] w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
+                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-auralblue h-[400px] hover:h-[500px]  w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
                             <img src={assets.hearing_care} className='w-16 pb-5' alt="" />
                             <h1 className='font-outfit font-bold text-2xl text-auralyellow pb-2'>Hearing Care Tailored Solutions</h1>
                             <p className='font-poppins text-[16px] pb-10'>Our selection includes hearing aids from the industry&apos;s top-rated manufacturers in the hearing technology field.</p>
@@ -49,7 +49,7 @@ const Welcome = () => {
 
 
                         </div>
-                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-[#f4f4f4] h-[400px] w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
+                        <div className='bg-white flex flex-col items-center justify-center border-[6px] border-auralblue h-[400px] hover:h-[500px]  w-[400px] py-10 px-6  rounded-lg hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out'>
                             <img src={assets.Professional} className='w-16 pb-5' alt="" />
                             <h1 className='font-outfit font-bold text-2xl text-auralyellow pb-2'>Experience Professional</h1>
                             <p className='font-poppins text-[16px] pb-10'>Specializing in long-standing hearing loss, we offer personalized, affordable solutions tailored to your unique needs.</p>

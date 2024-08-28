@@ -9,8 +9,8 @@ import '../Components.css'
 
 const Navbar = () => {
     return (
-        <div className='w-full max-w-screen-2xl h-full'>
-            <div className='p-6 flex items-center justify-between'>
+        <div className='w-full h-full Homepage'>
+            <div className='py-6 flex items-center justify-between'>
                 <div>
                     <img src={assets.logo} className='w-56' alt="" srcset="" />
                 </div>
