@@ -25,6 +25,15 @@ const assets = {
     books: 'assets/books.png',
     request_callback: 'assets/request_callback.png',
     logowhite: 'assets/logowhite.webp',
+    hearing_test: 'assets/hearing_test.png',
+    hearing_test: 'assets/hearing_test.png',
+    tinnitus: 'assets/tinnitus.png',
+    hearing_test_1: 'assets/hearing_test_1.png',
+    play_card_2: 'assets/play_card_2.png',
+    play_card_3: 'assets/play_card_3.png',
+    play_card_4: 'assets/play_card_4.png',
+    play_card_5: 'assets/play_card_5.png',
+    play_card_6: 'assets/play_card_6.png',
   };
   
   export default assets;
