@@ -16,7 +16,7 @@ const Specialized = () => {
 
   return (
     <div className="p-4 transition-all duration-500 ease-in-out pt-28 pb-10">
-      {/* Topic Boxes */}
+      
       <div className="flex justify-center space-x-4 mb-6">
         {topics.map((topic) => (
           <div
@@ -32,7 +32,7 @@ const Specialized = () => {
         ))}
       </div>
 
-      {/* Content Area */}
+     
       <div 
         className={`p-4 bg-white  rounded-lg transition-all duration-500 ease-in-out overflow-hidden 
         ${isExpanded ? 'max-h-[3000px]' : 'max-h-[700px]'}`}>
@@ -40,7 +40,7 @@ const Specialized = () => {
         <div>{selectedTopic.content}</div>
       </div>
 
-      {/* View More/View Less Button */}
+     
       <div className="flex justify-center mt-4">
         <button 
           className="px-4 py-2 bg-auralblue text-white rounded-lg transition-colors duration-300 ease-in-out hover:bg-auralblue-light" 

@@ -47,7 +47,7 @@ const topics = [
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Tinnitus Pitch Matching:
                     </h2>
-                    <p className="mb-4 font-poppins text-sm">We’ll work with you to identify the specific sound you’re hearing. By playing different tones, we can help you match the pitch and loudness of your tinnitus. This step is crucial for understanding what you’re experiencing and how it can be managed.
+                    <p className="mb-4 font-poppins text-sm">We&apos;ll work with you to identify the specific sound you&apos;re hearing. By playing different tones, we can help you match the pitch and loudness of your tinnitus. This step is crucial for understanding what you&apos;re experiencing and how it can be managed.
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Finding Relief with Masking:
                     </h2>
@@ -62,7 +62,7 @@ const topics = [
                     <p className="mb-4 font-poppins text-sm">You may be asked to complete some questionnaires that help us understand how tinnitus is affecting your daily life, including your sleep, concentration, and mood. This information is vital for tailoring the right treatment approach for you. </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Reviewing the Results:
                     </h2>
-                    <p className="mb-4 font-poppins text-sm">Once all the tests are completed, we’ll go over the results with you, explaining what we’ve found. We’ll discuss possible causes of your tinnitus and talk about treatment options that might help, such as sound therapy, hearing aids, or further medical advice.
+                    <p className="mb-4 font-poppins text-sm">Once all the tests are completed, we&apos;ll go over the results with you, explaining what we&apos;ve found. We&apos;ll discuss possible causes of your tinnitus and talk about treatment options that might help, such as sound therapy, hearing aids, or further medical advice.
                     </p>
                 </div>
 
@@ -119,35 +119,35 @@ const topics = [
                 <img src={assets.play_card_4} alt="React" className="w-2/4 h-auto object-cover mr-4 rounded-lg" />
                 <div className="w-2/4 mt-5 ">
 
-                    <p className="mb-4 font-poppins text-sm">Newborn hearing screening is a quick and simple test that helps detect hearing loss in newborn babies. This screening is crucial because early detection of hearing issues can significantly impact a child’s development, especially in terms of speech and language skills. Here’s what you need to know about newborn hearing screening:
+                    <p className="mb-4 font-poppins text-sm">Newborn hearing screening is a quick and simple test that helps detect hearing loss in newborn babies. This screening is crucial because early detection of hearing issues can significantly impact a child&apos;s development, especially in terms of speech and language skills. Here&apos;s what you need to know about newborn hearing screening:
                     </p>
-                    <h2 className="text-xl font-bold mb-2 font-outfit">Why It’s Important:
+                    <h2 className="text-xl font-bold mb-2 font-outfit">Why It&apos;s Important:
                     </h2>
                     
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Early Detection: <span className=' font-poppins text-sm font-normal mb-0'>Identifying hearing loss early allows for timely intervention, which is vital for a child’s communication development.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Early Detection: <span className=' font-poppins text-sm font-normal mb-0'>Identifying hearing loss early allows for timely intervention, which is vital for a child&apos;s communication development.
                     </span></h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Improved Outcomes: <span className=' font-poppins text-sm font-normal mb-0'>Early treatment can help prevent delays in speech, language, and cognitive development, leading to better long-term outcomes.
                     </span></h2>
                     
                     <h2 className="text-xl font-bold mb-2 font-outfit">How the Screening Is Done:</h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Timing:<span className=' font-poppins text-sm font-normal mb-0'>The screening is usually done before the baby leaves the hospital, within the first few days of life. If the baby wasn’t born in a hospital, the screening should be done within the first month.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Timing:<span className=' font-poppins text-sm font-normal mb-0'>The screening is usually done before the baby leaves the hospital, within the first few days of life. If the baby wasn&apos;t born in a hospital, the screening should be done within the first month.
                     </span></h2>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Types of Tests:
                     </h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Otoacoustic Emissions (OAE):
-                    <span className=' font-poppins text-sm font-normal mb-0'>A small earphone is placed in the baby’s ear, and gentle sounds are played. The test measures the echo produced by the inner ear (cochlea) in response to these sounds. If there’s no echo, it could indicate hearing loss.
+                    <span className=' font-poppins text-sm font-normal mb-0'>A small earphone is placed in the baby&apos;s ear, and gentle sounds are played. The test measures the echo produced by the inner ear (cochlea) in response to these sounds. If there&apos;s no echo, it could indicate hearing loss.
                     </span></h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Auditory Brainstem Response (ABR)::
-                    <span className=' font-poppins text-sm font-normal mb-0'>Small electrodes are placed on the baby’s head while soft sounds are played through earphones. The test measures how the hearing nerve and brain respond to sound. This test is often used if the baby didn’t pass the OAE or if there are other risk factors for hearing loss.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Auditory Brainstem Response (ABR):
+                    <span className=' font-poppins text-sm font-normal mb-0'>Small electrodes are placed on the baby&apos;s head while soft sounds are played through earphones. The test measures how the hearing nerve and brain respond to sound. This test is often used if the baby didn&apos;t pass the OAE or if there are other risk factors for hearing loss.
                     </span></h2>
 
                     <h2 className="text-lg font-bold mb-2 font-outfit">Quick and Painless:
                     <span className=' font-poppins text-sm font-normal mb-0'>The screening is non-invasive and painless. It usually takes just a few minutes and can be done while the baby is sleeping.
                     </span></h2>
 
-                    <h2 className="text-xl font-bold mb-2 font-outfit">What Happens If a Baby Doesn’t Pass the Screening:</h2>
+                    <h2 className="text-xl font-bold mb-2 font-outfit">What Happens If a Baby Doesn&apos;t Pass the Screening:</h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Follow-Up Testing:
-                    <span className=' font-poppins text-sm font-normal mb-0'>If the baby doesn’t pass the initial screening, it doesn’t necessarily mean there is a hearing loss. It may be due to fluid in the ear, noise in the testing environment, or the baby being unsettled during the test. A follow-up test will be scheduled to confirm the results.
+                    <span className=' font-poppins text-sm font-normal mb-0'>If the baby doesn&apos;t pass the initial screening, it doesn&apos;t necessarily mean there is a hearing loss. It may be due to fluid in the ear, noise in the testing environment, or the baby being unsettled during the test. A follow-up test will be scheduled to confirm the results.
                     </span></h2>
                    
                     <h2 className="text-lg font-bold mb-2 font-outfit">Further Evaluation:
@@ -158,12 +158,12 @@ const topics = [
 
                     </h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Normal Part of Newborn Care:
-                    <span className=' font-poppins text-sm font-normal mb-0'>Newborn hearing screening is a routine part of newborn care in many places. It’s safe, reliable, and crucial for ensuring that any potential hearing issues are identified early.
+                    <span className=' font-poppins text-sm font-normal mb-0'>Newborn hearing screening is a routine part of newborn care in many places. It&apos;s safe, reliable, and crucial for ensuring that any potential hearing issues are identified early.
                     </span></h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Early Intervention:
                     <span className=' font-poppins text-sm font-normal mb-0'>If hearing loss is confirmed, early intervention services can be started right away. These might include hearing aids, cochlear implants, speech therapy, or other communication strategies to help the child develop normal speech and language skills.
                     </span></h2>
-                    <p className="mb-4 font-poppins text-sm">Newborn hearing screening is a simple but powerful tool in safeguarding your child’s ability to hear and communicate effectively as they grow.
+                    <p className="mb-4 font-poppins text-sm">Newborn hearing screening is a simple but powerful tool in safeguarding your child&apos;s ability to hear and communicate effectively as they grow.
                     </p>
                    
                     
@@ -198,14 +198,14 @@ const topics = [
                     </span></h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Assessing Hearing Loss:<span className=' font-poppins text-sm font-normal mb-0'> It distinguishes between hearing loss caused by problems in the middle ear and loss due to inner ear or nerve issues.
                     </span></h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Monitoring Surgical Outcomes:<span className=' font-poppins text-sm font-normal mb-0'>  It’s useful for checking how well the middle ear is functioning before and after surgeries like ear tube placement or eardrum repair.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Monitoring Surgical Outcomes:<span className=' font-poppins text-sm font-normal mb-0'>  It&apos;s useful for checking how well the middle ear is functioning before and after surgeries like ear tube placement or eardrum repair.
                     </span></h2>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Children:</h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Monitoring Surgical Outcomes:<span className=' font-poppins text-sm font-normal mb-0'>  It’s often used to diagnose and monitor hearing problems in kids, especially if they have frequent ear infections or developmental hearing issues.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Monitoring Surgical Outcomes:<span className=' font-poppins text-sm font-normal mb-0'>  It&apos;s often used to diagnose and monitor hearing problems in kids, especially if they have frequent ear infections or developmental hearing issues.
                     </span></h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">People with Hearing Complaints:<span className=' font-poppins text-sm font-normal mb-0'>  If someone has symptoms like a feeling of fullness in the ear or fluid, this test can provide valuable information.
                     </span></h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Pre and Post-Surgical Patients:<span className=' font-poppins text-sm font-normal mb-0'>  It’s important for evaluating middle ear function before and after surgeries to ensure the procedures are effective.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Pre and Post-Surgical Patients:<span className=' font-poppins text-sm font-normal mb-0'>  It&apos;s important for evaluating middle ear function before and after surgeries to ensure the procedures are effective.
                     </span></h2>
                    
                     
@@ -225,7 +225,7 @@ const topics = [
                 <img src={assets.play_card_6} alt="React" className="w-2/4 h-auto object-cover mr-4 rounded-lg" />
                 <div className="w-2/4 mt-5 ">
 
-                    <p className="mb-4 font-poppins text-sm">A Cochlear Implant Program is a structured plan designed to provide individuals with severe to profound hearing loss access to cochlear implants and the support they need to use them effectively. This program typically includes several stages, from evaluation to long-term follow-up. Here’s a closer look at what such a program usually involves:
+                    <p className="mb-4 font-poppins text-sm">A Cochlear Implant Program is a structured plan designed to provide individuals with severe to profound hearing loss access to cochlear implants and the support they need to use them effectively. This program typically includes several stages, from evaluation to long-term follow-up. Here&apos;s a closer look at what such a program usually involves:
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Key Components of a Cochlear Implant Program:</h2>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Assessment and Evaluation:</h2>
@@ -249,7 +249,7 @@ const topics = [
                     <h2 className="text-xl font-bold mb-2 font-outfit">Activation and Initial Fitting:</h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Device Activation:<span className=' font-poppins text-sm font-normal mb-0'>  After the implant heals, the external processor is turned on, and initial settings are adjusted.
                     </span></h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Mapping:<span className=' font-poppins text-sm font-normal mb-0'> The process of programming the cochlear implant’s settings to match the individual’s hearing needs. This is often done in several sessions to fine-tune the device.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Mapping:<span className=' font-poppins text-sm font-normal mb-0'> The process of programming the cochlear implant&apos;s settings to match the individual&apos;s hearing needs. This is often done in several sessions to fine-tune the device.
                     </span></h2>
                    
                     <h2 className="text-xl font-bold mb-2 font-outfit">Rehabilitation and Support:</h2>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const timeSlots = Array.from({ length: 20 }, (_, i) => {
-    const hour = Math.floor(i / 2) + 9; // 9 AM to 7 PM
+    const hour = Math.floor(i / 2) + 9; 
     const minute = (i % 2) * 30;
     const period = hour >= 12 ? 'PM' : 'AM';
     const formattedHour = hour % 12 || 12;
@@ -22,13 +22,13 @@ const Specialized = () => {
     const [errorMessages, setErrorMessages] = useState({});
 
     useEffect(() => {
-        // Load booked time slots from local storage
+        
         const storedBookedSlots = JSON.parse(localStorage.getItem('bookedTimeSlots')) || {};
         setBookedTimeSlots(storedBookedSlots);
     }, []);
 
     useEffect(() => {
-        // Store booked time slots in local storage
+       
         localStorage.setItem('bookedTimeSlots', JSON.stringify(bookedTimeSlots));
     }, [bookedTimeSlots]);
 
@@ -53,16 +53,16 @@ const Specialized = () => {
             return;
         }
 
-        // Mark time slot as booked
+        
         setBookedTimeSlots((prev) => ({
             ...prev,
             [formData.timeSlot]: 'booked'
         }));
 
-        // Show toast notification
+       
         toast.success('Appointment Booked Successfully');
 
-        // Reset form and state
+        
         setFormData({
             name: '',
             phone: '',
@@ -140,7 +140,7 @@ const Specialized = () => {
                         </div>
                     </div>
 
-                    {/* Time Slots Section */}
+                    
                     <div className='pt-10'>
                         <h2 className='font-outfit text-3xl text-auralyellow font-bold mb-4'>Select Time Slots</h2>
                         <div className='grid grid-cols-7 gap-4 place-content-center'>

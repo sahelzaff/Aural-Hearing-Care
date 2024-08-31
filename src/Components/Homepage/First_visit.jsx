@@ -17,12 +17,12 @@ const FirstVisit = () => {
         },
         {
             title: 'Hearing Test',
-            description: 'You’ll undergo a hearing test to measure how you perceive different tones and speech sounds, helping us pinpoint the nature and cause of any hearing loss.',
+            description: 'You&apos;ll undergo a hearing test to measure how you perceive different tones and speech sounds, helping us pinpoint the nature and cause of any hearing loss.',
             image: assets.audiometer,
         },
         {
             title: 'Treatment Recommendations',
-            description: 'Based on your results, we’ll discuss personalized treatment options that cater to your hearing sensitivity and daily life.',
+            description: 'Based on your results, we&apos;ll discuss personalized treatment options that cater to your hearing sensitivity and daily life.',
             image: assets.first_aid_kit,
         },
         {
@@ -32,12 +32,12 @@ const FirstVisit = () => {
         },
         {
             title: 'Hearing Aid Consultation',
-            description: 'We’ll provide you with information on protecting your hearing and maintaining your hearing aids for optimal performance.',
+            description: 'We&apos;ll provide you with information on protecting your hearing and maintaining your hearing aids for optimal performance.',
             image: assets.hearing_aid,
         },
         {
             title: 'Follow-Up Plan',
-            description: 'We’ll establish a follow-up schedule to ensure your treatment and hearing aids are working optimally for you.',
+            description: 'We&apos;ll establish a follow-up schedule to ensure your treatment and hearing aids are working optimally for you.',
             image: assets.schedule,
         },
     ];
@@ -47,9 +47,9 @@ const FirstVisit = () => {
 
     useEffect(() => {
         const options = {
-            root: null, // viewport
+            root: null, 
             rootMargin: '0px',
-            threshold: 0.25, // Adjust this to make highlighting more gradual
+            threshold: 0.25, 
         };
 
         const observer = new IntersectionObserver((entries) => {
@@ -90,7 +90,7 @@ const FirstVisit = () => {
                     {visitDetails.map((detail, index) => (
                         <div
                             key={index}
-                            ref={(el) => sectionRefs.current[index] = el} // Set reference to each section
+                            ref={(el) => sectionRefs.current[index] = el} 
                             className={`flex items-center p-4 rounded-lg transition-all duration-700 ease-in-out ${
                                 index === currentIndex ? 'bg-auralblue text-white' : 'bg-gray-200 text-gray-700'
                             }`}
@@ -101,7 +101,7 @@ const FirstVisit = () => {
                                 className={`transition-all duration-700 ease-in-out ${
                                     index === currentIndex ? 'filter-none' : 'grayscale'
                                 }`}
-                                style={{ width: '60px', marginRight: '16px' }} // Adjusted icon size and margin
+                                style={{ width: '60px', marginRight: '16px' }} 
                             />
                             <div>
                                 <h2 className="text-lg font-bold mb-2">{detail.title}</h2>
