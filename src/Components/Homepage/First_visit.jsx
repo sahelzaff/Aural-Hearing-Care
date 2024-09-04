@@ -47,16 +47,16 @@ const FirstVisit = () => {
 
     useEffect(() => {
         const currentRefs = sectionRefs.current;  // Capture the current ref values
-
+    
         const options = {
             root: null,
             rootMargin: '0px',
             threshold: 0.25,
         };
-
+    
         const observer = new IntersectionObserver((entries) => {
             let newIndex = currentIndex;
-
+    
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const index = currentRefs.indexOf(entry.target);
@@ -65,16 +65,25 @@ const FirstVisit = () => {
                     }
                 }
             });
-
+    
             setCurrentIndex(newIndex);
         }, options);
-
-        currentRefs.forEach((section) => observer.observe(section));
-
+    
+        currentRefs.forEach((section) => {
+            if (section) {
+                observer.observe(section);
+            }
+        });
+    
         return () => {
-            currentRefs.forEach((section) => observer.unobserve(section));  // Use captured ref values for cleanup
+            currentRefs.forEach((section) => {
+                if (section) {
+                    observer.unobserve(section);
+                }
+            });
         };
     }, [currentIndex]);
+    
 
     return (
         <div className="w-3/4 mx-auto px-4 sm:px-8 py-16 bg-gray-100 rounded-lg shadow-lg">

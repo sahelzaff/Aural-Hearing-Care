@@ -34,6 +34,13 @@ const assets = {
     play_card_4: 'assets/play_card_4.png',
     play_card_5: 'assets/play_card_5.png',
     play_card_6: 'assets/play_card_6.png',
+    quote_green: 'assets/quote_green.png',
+    quote_blue: 'assets/quote_blue.png',
+    product_1: 'assets/product_1.avif',
+    product_2: 'assets/product_2.avif',
+    product_3: 'assets/product_3.avif',
+    product_4: 'assets/product_4.avif',
+    product_5: 'assets/product_5.avif',
   };
   
   export default assets;
