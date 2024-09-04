@@ -292,7 +292,7 @@ const topics = [
         name: 'Occupational Hearing Conservation',
         content: (
             <div className="flex flex-row gap-10 items-start mt-10">
-                <img src={assets.play_card_6} alt="React" className="w-2/4 h-auto object-cover mr-4 rounded-lg" />
+                <img src={assets.play_card_3} alt="React" className="w-2/4 h-auto object-cover mr-4 rounded-lg" />
                 <div className="w-2/4 mt-5 ">
 
                     <p className="mb-4 font-poppins text-sm">Occupational Hearing Conservation Programs (OHCPs) are comprehensive strategies designed to protect workers from hearing loss caused by exposure to loud noises in the workplace. These programs are essential for industries where employees are regularly exposed to high noise levels, such as manufacturing, construction, and mining.
