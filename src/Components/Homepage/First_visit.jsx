@@ -46,10 +46,12 @@ const FirstVisit = () => {
     const sectionRefs = useRef([]);
 
     useEffect(() => {
+        const currentRefs = sectionRefs.current;  // Capture the current ref values
+
         const options = {
-            root: null, 
+            root: null,
             rootMargin: '0px',
-            threshold: 0.25, 
+            threshold: 0.25,
         };
 
         const observer = new IntersectionObserver((entries) => {
@@ -57,7 +59,7 @@ const FirstVisit = () => {
 
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    const index = sectionRefs.current.indexOf(entry.target);
+                    const index = currentRefs.indexOf(entry.target);
                     if (index !== -1) {
                         newIndex = index;
                     }
@@ -67,10 +69,10 @@ const FirstVisit = () => {
             setCurrentIndex(newIndex);
         }, options);
 
-        sectionRefs.current.forEach((section) => observer.observe(section));
+        currentRefs.forEach((section) => observer.observe(section));
 
         return () => {
-            sectionRefs.current.forEach((section) => observer.unobserve(section));
+            currentRefs.forEach((section) => observer.unobserve(section));  // Use captured ref values for cleanup
         };
     }, [currentIndex]);
 
@@ -90,7 +92,7 @@ const FirstVisit = () => {
                     {visitDetails.map((detail, index) => (
                         <div
                             key={index}
-                            ref={(el) => sectionRefs.current[index] = el} 
+                            ref={(el) => sectionRefs.current[index] = el}
                             className={`flex items-center p-4 rounded-lg transition-all duration-700 ease-in-out ${
                                 index === currentIndex ? 'bg-auralblue text-white' : 'bg-gray-200 text-gray-700'
                             }`}
@@ -101,7 +103,7 @@ const FirstVisit = () => {
                                 className={`transition-all duration-700 ease-in-out ${
                                     index === currentIndex ? 'filter-none' : 'grayscale'
                                 }`}
-                                style={{ width: '60px', marginRight: '16px' }} 
+                                style={{ width: '60px', marginRight: '16px' }}
                             />
                             <div>
                                 <h2 className="text-lg font-bold mb-2">{detail.title}</h2>
@@ -114,7 +116,7 @@ const FirstVisit = () => {
 
             <div className="pt-10 flex justify-center">
                 <button type="button" className='font-medium flex flex-row gap-2 items-center text-white py-3 px-4 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out text-xl'>
-                    <img src={assets.books} className='w-6' alt="" /> 
+                    <img src={assets.books} className='w-6' alt="" />
                     <span className='font-montserrat font-semibold'>Hearing Resource</span>
                 </button>
             </div>

@@ -43,7 +43,7 @@ const topics = [
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Hearing Test:
                     </h2>
-                    <p className="mb-4 font-poppins text-sm">Since tinnitus often goes hand in hand with hearing loss, a hearing test will usually be done. This test checks your ability to hear various sounds and helps us see if there's any hearing loss that might be linked to your tinnitus.
+                    <p className="mb-4 font-poppins text-sm">Since tinnitus often goes hand in hand with hearing loss, a hearing test will usually be done. This test checks your ability to hear various sounds and helps us see if there&apos;s any hearing loss that might be linked to your tinnitus.
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Tinnitus Pitch Matching:
                     </h2>
@@ -79,7 +79,7 @@ const topics = [
                 <img src={assets.play_card_3} alt="React" className="w-2/4 h-auto object-cover mr-4 rounded-lg" />
                 <div className="w-2/4 mt-5 ">
 
-                    <p className="mb-4 font-poppins text-sm">Speech therapy is a specialized service designed to help individuals improve their speech, language, communication, and swallowing abilities. It's particularly beneficial for people with speech disorders, language delays, voice disorders, or difficulties with social communication or cognitive communication Disorder.
+                    <p className="mb-4 font-poppins text-sm">Speech therapy is a specialized service designed to help individuals improve their speech, language, communication, and swallowing abilities. It&apos;s particularly beneficial for people with speech disorders, language delays, voice disorders, or difficulties with social communication or cognitive communication Disorder.
                     </p>
                     <h2 className="text-xl font-bold mb-2 font-outfit">How Speech Therapy Works:
                     </h2>
@@ -147,7 +147,7 @@ const topics = [
 
                     <h2 className="text-xl font-bold mb-2 font-outfit">What Happens If a Baby Doesn&apos;t Pass the Screening:</h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Follow-Up Testing:
-                    <span className=' font-poppins text-sm font-normal mb-0'>If the baby doesn&apos;t pass the initial screening, it doesn&apos;t necessarily mean there is a hearing loss. It may be due to fluid in the ear, noise in the testing environment, or the baby being unsettled during the test. A follow-up test will be scheduled to confirm the results.
+                    <span className='font-poppins text-sm font-normal mb-0'>If the baby doesn&apos;t pass the initial screening, it doesn&apos;t necessarily mean there is a hearing loss. It may be due to fluid in the ear, noise in the testing environment, or the baby being unsettled during the test. A follow-up test will be scheduled to confirm the results.
                     </span></h2>
                    
                     <h2 className="text-lg font-bold mb-2 font-outfit">Further Evaluation:
@@ -234,7 +234,7 @@ const topics = [
                     </span></h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Medical Evaluation:<span className=' font-poppins text-sm font-normal mb-0'> A thorough examination by an ear, nose, and throat (ENT) specialist to assess suitability for surgery and address any medical conditions that might affect implantation.
                     </span></h2>
-                    <h2 className="text-lg font-bold mb-2 font-outfit">Speech and Language Assessment:<span className=' font-poppins text-sm font-normal mb-0'> Evaluation by a speech-language pathologist to understand the individual's communication needs and potential for benefit from the implant.
+                    <h2 className="text-lg font-bold mb-2 font-outfit">Speech and Language Assessment:<span className='font-poppins text-sm font-normal mb-0'> Evaluation by a speech-language pathologist to understand the individual&apos;s communication needs and potential for benefit from the implant.
                     </span></h2>
                     <h2 className="text-xl font-bold mb-2 font-outfit">Counseling and Education:</h2>
                     <h2 className="text-lg font-bold mb-2 font-outfit">Pre-Implantation Counseling:<span className=' font-poppins text-sm font-normal mb-0'> Providing information about what to expect from the cochlear implant, including potential benefits and limitations.
@@ -315,7 +315,7 @@ const topics = [
                     <h2 className="text-lg font-bold mb-2 font-outfit">Employers:<span className=' font-poppins text-sm font-normal mb-0'> Companies have a legal and ethical obligation to implement OHCPs to protect their employees and comply with safety regulations.
                     </span></h2>
 
-                    <p className="mb-4 font-poppins text-sm">Overall, Occupational Hearing Conservation Programs are crucial for safeguarding workers' hearing health and ensuring a safer and more productive work environment.
+                    <p className="mb-4 font-poppins text-sm">Overall, Occupational Hearing Conservation Programs are crucial for safeguarding workers hearing health and ensuring a safer and more productive work environment.
                     </p>
                 </div>
 
