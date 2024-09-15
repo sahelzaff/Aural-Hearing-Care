@@ -4,9 +4,7 @@ import { RxDividerVertical } from "react-icons/rx";
 import { MdHearing } from "react-icons/md";
 import { IoMdMail } from "react-icons/io";
 import { FaPhoneAlt } from "react-icons/fa";
-
-
-
+import Link from 'next/link';
 
 
 const TopbarBelow = () => {
@@ -20,10 +18,12 @@ const TopbarBelow = () => {
                         <span className='ml-2 text-white font-outfit text-xl font-medium'>Book an appointment</span>
                     </div>
                     <RxDividerVertical className='text-white text-3xl' />
-                    <div className='flex flex-row items-center justify-start gap-1 cursor-pointer hover:scale-[1.05] transition-all duration-300 ease-in-out'>
-                        <MdHearing className='text-3xl text-white font-extrabold' />
-                        <span className='ml-2 text-white font-outfit text-xl font-medium'>Online Hearing Test</span>
-                    </div>
+                    <Link href='/online-hearing-test'>
+                        <div className='flex flex-row items-center justify-start gap-1 cursor-pointer hover:scale-[1.05] transition-all duration-300 ease-in-out'>
+                            <MdHearing className='text-3xl text-white font-extrabold' />
+                            <span className='ml-2 text-white font-outfit text-xl font-medium'>Online Hearing Test</span>
+                        </div>
+                    </Link>
 
                 </div>
 

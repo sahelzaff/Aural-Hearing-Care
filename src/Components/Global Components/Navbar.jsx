@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaPhoneAlt } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import Link from 'next/link';
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { CiHeart } from "react-icons/ci";
 import assets from '../../../public/assets/assets'
@@ -11,9 +12,12 @@ const Navbar = () => {
     return (
         <div className='w-full h-full Homepage'>
             <div className='py-6 flex items-center justify-between'>
-                <div>
+                <Link href='/#'>
+
+                <div className='cursor-pointer'>
                     <img src={assets.logo} className='w-56' alt="" srcset="" />
                 </div>
+                </Link>
                 <div className='flex flex-row space-x-4 items-center'>
 
                     <ul className='flex flex-row space-x-8'>
