@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FaPlay, FaVolumeUp, FaVolumeDown } from 'react-icons/fa';
 
-import '../Components.css'; // Import custom CSS for additional styling
+import '../Components.css'; 
 
 
 const Hearing_Test = () => {
@@ -15,16 +15,25 @@ const Hearing_Test = () => {
     headphone_type: '',
     answers: {},
   });
-  const [volume, setVolume] = useState(50); // Initial volume level
+
   const [frequencyIndex, setFrequencyIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState(null);
   const [backgroundNoiseMessage, setBackgroundNoiseMessage] = useState('');
   const [submissionMessage, setSubmissionMessage] = useState('');
+  const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
+
+
+  const [decibelLevels, setDecibelLevels] = useState({});
+  const [volume, setVolume] = useState(2); // Start at 10 dB
+
 
   const frequencies = [
     { frequency: 2000, ear: 'right', label: '2kHz' },
     { frequency: 4000, ear: 'right', label: '4kHz' },
-    { frequency: 1000, ear: 'left', label: '1kHz' },
+    { frequency: 6000, ear: 'right', label: '6kHz' },
+    { frequency: 2000, ear: 'left', label: '2kHz' },
+    { frequency: 4000, ear: 'left', label: '4kHz' },
     { frequency: 6000, ear: 'left', label: '6kHz' },
   ];
 
@@ -71,26 +80,53 @@ const Hearing_Test = () => {
 
   // Function to play sound
   const playSound = async (frequency, ear) => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
     const audio = new Audio(`http://127.0.0.1:5000/api/hearing-test/play-tone?frequency=${frequency}&ear=${ear}`);
-    audio.volume = volume / 100;
+    audio.volume = volume / 100; // Convert volume to scale 0-1 for Audio API
     audio.play();
+
+    setCurrentAudio(audio);
   };
 
   // Function to handle volume change
   const adjustVolume = (change) => {
-    setVolume((prev) => Math.min(100, Math.max(0, prev + change)));
+    setVolume((prev) => {
+      const newVolume = Math.min(100, Math.max(0, prev + change));  // Ensure volume stays between 0 and 100 dB HL
+      // Update the volume of the currently playing sound in real-time
+      if (currentAudio) {
+        currentAudio.volume = newVolume / 100;  // Update the current audio volume dynamically
+      }
+      return newVolume;
+    });
   };
-
   // Function to handle next sound
   const handleNextSound = () => {
+    // Record the current frequency's decibel level
+    const currentFrequency = frequencies[frequencyIndex];
+    setDecibelLevels((prev) => ({
+      ...prev,
+      [`${currentFrequency.label} ${currentFrequency.ear} Ear`]: volume,
+    }));
+
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
     if (frequencyIndex < frequencies.length - 1) {
+      // Move to the next sound in the list
       setFrequencyIndex((prev) => prev + 1);
+      setVolume(10); // Reset the volume to 10 dB for each new sound
     } else {
+      // If this is the last sound, submit the data to backend
       setSubmissionMessage('Thank you for completing the hearing test!');
-      submitHearingTest(formData); // Submit and download the PDF report
+      submitHearingTest({ ...formData, decibelLevels }); // Submit with the recorded decibel levels
     }
   };
-
 
   const measureBackgroundNoise = async () => {
     try {
@@ -98,6 +134,7 @@ const Hearing_Test = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
+
       const microphone = audioContext.createMediaStreamSource(stream);
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
@@ -240,11 +277,13 @@ const Hearing_Test = () => {
           <div className="box">
             <h2 className="heading">Hearing Test</h2>
             <p className="paragraph">Current Sound: {frequencies[frequencyIndex].label} on {frequencies[frequencyIndex].ear} Ear</p>
-            <button className="btn" onClick={() => playSound(frequencies[frequencyIndex].frequency, frequencies[frequencyIndex].ear)}>Play Sound</button>
+            <button className="btn" onClick={() => playSound(frequencies[frequencyIndex].frequency, frequencies[frequencyIndex].ear)}>
+              Play Sound
+            </button>
             <div className="volume-controls">
-              <button className="volume-btn" onClick={() => adjustVolume(-10)}><FaVolumeDown /></button>
-              <span className="volume-level">Volume: {volume}</span>
-              <button className="volume-btn" onClick={() => adjustVolume(10)}><FaVolumeUp /></button>
+              <button className="volume-btn" onClick={() => adjustVolume(-2)}><FaVolumeDown /></button>
+              <span className="volume-level">Volume: {volume} dB</span>
+              <button className="volume-btn" onClick={() => adjustVolume(2)}><FaVolumeUp /></button>
             </div>
             <button className="btn" onClick={handleNextSound}>Next Sound</button>
           </div>
