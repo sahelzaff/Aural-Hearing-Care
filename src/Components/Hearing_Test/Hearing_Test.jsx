@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FaPlay, FaVolumeUp, FaVolumeDown } from 'react-icons/fa';
 
-import '../Components.css'; 
+import '../Components.css';
 
 
 const Hearing_Test = () => {
@@ -25,15 +25,12 @@ const Hearing_Test = () => {
 
 
   const [decibelLevels, setDecibelLevels] = useState({});
-  const [volume, setVolume] = useState(2); // Start at 10 dB
-
+  const [volume, setVolume] = useState(1); 
 
   const frequencies = [
     { frequency: 2000, ear: 'right', label: '2kHz' },
     { frequency: 4000, ear: 'right', label: '4kHz' },
-    { frequency: 6000, ear: 'right', label: '6kHz' },
-    { frequency: 2000, ear: 'left', label: '2kHz' },
-    { frequency: 4000, ear: 'left', label: '4kHz' },
+    { frequency: 1000, ear: 'left', label: '1kHz' },
     { frequency: 6000, ear: 'left', label: '6kHz' },
   ];
 
@@ -42,7 +39,7 @@ const Hearing_Test = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        'https://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit',
+        'http://127.0.0.1:5000/api/hearing-test/submit',
         data,
         { responseType: 'blob' }
       );
@@ -85,7 +82,7 @@ const Hearing_Test = () => {
       currentAudio.currentTime = 0;
     }
 
-    const audio = new Audio(`https://aural-hearing-backend-production.up.railway.app/api/hearing-test/play-tone?frequency=${frequency}&ear=${ear}`);
+    const audio = new Audio(`http://127.0.0.1:5000/api/hearing-test/play-tone?frequency=${frequency}&ear=${ear}`);
     audio.volume = volume / 100; // Convert volume to scale 0-1 for Audio API
     audio.play();
 
@@ -188,6 +185,20 @@ const Hearing_Test = () => {
           <div className="box">
             <h2 className="heading">Enter Your Details</h2>
             <input className="input" type="text" name="full_name" placeholder="Full Name" onChange={handleChange} />
+            <div className="form-group text-start text-gray-400 text-xl">
+              <select
+                className="input text-black"
+                name="sex"
+                id="sex"
+                value={formData.sex}
+                onChange={handleChange}
+              >
+                <option value="">Select your sex</option>
+                <option value="Male" className='text-black'>Male</option>
+                <option value="Female" className='text-black'>Female</option>
+                <option value="Others" className='text-black'>Prefer not to say</option>
+              </select>
+            </div>
             <input className="input" type="number" name="age" placeholder="Age" onChange={handleChange} />
             <input className="input" type="text" name="contact" placeholder="Phone Number or Email" onChange={handleChange} />
             <button className="btn" onClick={() => setStep(3)}>Next</button>
@@ -281,9 +292,9 @@ const Hearing_Test = () => {
               Play Sound
             </button>
             <div className="volume-controls">
-              <button className="volume-btn" onClick={() => adjustVolume(-2)}><FaVolumeDown /></button>
+              <button className="volume-btn" onClick={() => adjustVolume(-0.5)}><FaVolumeDown /></button>
               <span className="volume-level">Volume: {volume} dB</span>
-              <button className="volume-btn" onClick={() => adjustVolume(2)}><FaVolumeUp /></button>
+              <button className="volume-btn" onClick={() => adjustVolume(0.5)}><FaVolumeUp /></button>
             </div>
             <button className="btn" onClick={handleNextSound}>Next Sound</button>
           </div>
