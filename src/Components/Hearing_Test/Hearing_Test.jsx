@@ -42,7 +42,7 @@ const Hearing_Test = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        'http://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit',
+        'https://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit',
         data,
         { responseType: 'blob' }
       );
@@ -85,7 +85,7 @@ const Hearing_Test = () => {
       currentAudio.currentTime = 0;
     }
 
-    const audio = new Audio(`http://aural-hearing-backend-production.up.railway.app/api/hearing-test/play-tone?frequency=${frequency}&ear=${ear}`);
+    const audio = new Audio(`https://aural-hearing-backend-production.up.railway.app/api/hearing-test/play-tone?frequency=${frequency}&ear=${ear}`);
     audio.volume = volume / 100; // Convert volume to scale 0-1 for Audio API
     audio.play();
 
