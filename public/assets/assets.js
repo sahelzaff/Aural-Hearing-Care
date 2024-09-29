@@ -41,6 +41,9 @@ const assets = {
     product_3: 'assets/product_3.avif',
     product_4: 'assets/product_4.avif',
     product_5: 'assets/product_5.avif',
+    Test_1: 'assets/Test_1.jpg',
+    Test_2: 'assets/Test_2.jpg',
+    Test_3: 'assets/Test_3.jpg',
   };
   
   export default assets;

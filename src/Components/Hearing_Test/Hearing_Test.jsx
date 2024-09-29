@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FaPlay, FaVolumeUp, FaVolumeDown } from 'react-icons/fa';
 
-import '../Components.css';
+// import '../Components.css';
+import assets from '../../../public/assets/assets';
+import { IoIosCheckmark } from 'react-icons/io';
 
 
 const Hearing_Test = () => {
@@ -25,7 +27,7 @@ const Hearing_Test = () => {
 
 
   const [decibelLevels, setDecibelLevels] = useState({});
-  const [volume, setVolume] = useState(1); 
+  const [volume, setVolume] = useState(1);
 
   const frequencies = [
     { frequency: 2000, ear: 'right', label: '2kHz' },
@@ -174,10 +176,34 @@ const Hearing_Test = () => {
     switch (step) {
       case 1:
         return (
-          <div className="box">
-            <h2 className="heading">Instant Hearing Test</h2>
-            <p className="paragraph">Take a 2-minute instant hearing test to check your hearing.</p>
-            <button className="btn" onClick={() => setStep(2)}>Start Test</button>
+          <div className='h-full py-10  '>
+            <h2 className="font-outfit font-bold text-5xl text-auralyellow text-center pt-10 pb-6 w-full">Instant Hearing Test</h2>
+            <div className="flex flex-row item-center justify-center  w-full border-2 border-gray-100 shadow-xl rounded-lg">
+              <div className="flex flex-col items-start justify-start w-1/2">
+                <p className="font-poppins text-lg text-start pt-10 px-2 ">Take a 2-minute instant hearing test to check your hearing.</p>
+                <p className="font-poppins text-[15px] text-start px-2 py-2 ">This Test Is Designed To:</p>
+                <div className='ml-2'>
+                  <div className="flex flex-row items-center justify-start">
+                   <IoIosCheckmark className='text-4xl'/>
+                    <p className="font-poppins text-[14px] text-start">Identify the frequency and direction of sounds.</p>
+                  </div>
+                  <div className="flex flex-row items-center justify-start">
+                    <IoIosCheckmark className='text-4xl'/>
+                    <p className="font-poppins text-[14px] text-start">Understand your hearing health.</p>
+                  </div>
+                  <div className="flex flex-row items-center justify-start">
+                    <IoIosCheckmark className='text-4xl'/>
+                    <p className="font-poppins text-[14px] text-start">Get personalized recommendations.</p>
+                  </div>
+                 
+              </div>
+
+                <button className=" mx-auto px-12 py-2 bg-auralblue text-white font-poppins text-xl font-bold text-center rounded-none mt-24" onClick={() => setStep(2)}>Start Test</button>
+              </div>
+              <div className="w-1/2">
+                <img src={assets.Test_1} className='w-full  rounded-r-lg h-[500px] rounded-br-lg' alt="" srcset="" />
+              </div>
+            </div>
           </div>
         );
       case 2:
