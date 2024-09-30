@@ -44,6 +44,7 @@ const assets = {
     Test_1: 'assets/Test_1.jpg',
     Test_2: 'assets/Test_2.jpg',
     Test_3: 'assets/Test_3.jpg',
+    play_button: 'assets/play_button.png',
   };
   
   export default assets;
