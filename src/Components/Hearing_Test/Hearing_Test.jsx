@@ -77,7 +77,7 @@ const Hearing_Test = () => {
         }))
       };
 
-      await axios.post('http://localhost:8000/api/hearing-test/submit', dataToSend);
+      await axios.post('http://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit', dataToSend);
       setShowReport(true);
     } catch (error) {
       setSubmissionMessage('Error submitting hearing test: ' + error.message);
@@ -218,13 +218,13 @@ const Hearing_Test = () => {
       const nextRound = currentRound + 1;
       setCurrentRound(nextRound);
       setSelectedWords([]);
-      setAudioUrl(`http://localhost:8000/api/speech-test/${currentEar}/audio/${nextRound}`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/${nextRound}`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words for the next round
     } else if (currentEar === 'right') {
       setCurrentEar('left');
       setCurrentRound(1);
       setSelectedWords([]);
-      setAudioUrl(`http://localhost:8000/api/speech-test/left/audio/1`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/left/audio/1`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words when switching ears
     } else {
       // Test complete, move to next step
@@ -238,7 +238,7 @@ const Hearing_Test = () => {
       currentAudio.currentTime = 0;
     }
 
-    const audio = new Audio(`http://localhost:8000/api/hearing-test/play-tone?frequency=${currentTone.frequency}&ear=${currentTone.ear}`);
+    const audio = new Audio(`http://aural-hearing-backend-production.up.railway.app/api/hearing-test/play-tone?frequency=${currentTone.frequency}&ear=${currentTone.ear}`);
     audio.volume = toneVolume / 100;
     audio.play().catch(error => console.error("Audio playback failed:", error));
 
@@ -671,7 +671,7 @@ const Hearing_Test = () => {
   useEffect(() => {
     if (step === 11) {
       setAllWords(shuffleArray([...allWords]));
-      setAudioUrl(`http://localhost:8000/api/speech-test/${currentEar}/audio/1`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/1`);
     }
   }, [step]);
 
