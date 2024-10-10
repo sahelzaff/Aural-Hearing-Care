@@ -18,7 +18,7 @@ const Page = () => {
             {/* <QueryClientProvider client={queryClient}> */}
                 <Hearing_Test />
             {/* </QueryClientProvider> */}
-            {/* <Footer /> */}
+            <Footer />
         </>
     );
 };
