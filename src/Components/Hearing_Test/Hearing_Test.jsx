@@ -430,7 +430,7 @@ const Hearing_Test = () => {
                 ))}
               </div>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="w-1/2">
-                <img src={assets.Test_2} className='w-full rounded-r-lg h-[500px] rounded-br-lg' alt="" />
+                <img src={assets.Test_2} className="w-full rounded-r-lg h-[500px] rounded-br-lg" alt="" />
               </motion.div>
             </div>
           </div>
@@ -450,7 +450,7 @@ const Hearing_Test = () => {
                 ))}
               </div>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="w-1/2">
-                <img src={assets.Test_2} className='w-full rounded-r-lg h-[500px] rounded-br-lg' alt="" />
+                <img src={assets.Test_2} className="w-full rounded-r-lg h-[500px] rounded-br-lg" alt="" />
               </motion.div>
             </div>
           </div>
