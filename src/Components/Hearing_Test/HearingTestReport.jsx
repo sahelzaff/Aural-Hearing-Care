@@ -141,7 +141,7 @@ const HearingTestReport = () => {
     useEffect(() => {
         const fetchReport = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/hearing-test/report');
+                const response = await axios.get('http://aural-hearing-backend-production.up.railway.app/api/hearing-test/report');
                 setReport(response.data);
             } catch (error) {
                 console.error('Error fetching report:', error);
