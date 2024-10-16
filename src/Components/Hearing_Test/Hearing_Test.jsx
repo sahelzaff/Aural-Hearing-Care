@@ -648,7 +648,7 @@ const Hearing_Test = () => {
                   <HearingTestReport />
                 ) : (
                   <>
-                    <p className="font-poppins text-xl text-center mb-4 mx-auto">Your test has been successfully completed. Please click 'Submit' to receive your results.</p>
+                    <p className="font-poppins text-xl text-center mb-4 mx-auto">Your test has been successfully completed. Please click &apos;Submit&apos; to receive your results.</p>
                     <button
                       className="px-12 py-2 bg-auralblue text-white font-poppins text-xl font-bold text-center rounded-none mt-8 mx-auto"
                       onClick={submitHearingTest}
