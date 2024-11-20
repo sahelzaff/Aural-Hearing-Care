@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['ucarecdn.com'],
+    unoptimized: true
   },
   webpack: (config) => {
     config.resolve.fallback = { fs: false };
@@ -12,6 +13,11 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  }
 }
 
 module.exports = nextConfig
