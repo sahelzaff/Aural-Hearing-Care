@@ -4,9 +4,16 @@ const nextConfig = {
   images: {
     domains: ['ucarecdn.com'],
   },
-  experimental: {
-    appDir: true,
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false };
+    return config;
   },
+  experimental: {
+    turbotrace: {
+      logLevel: 'error'
+    }
+  },
+  output: 'standalone',
 }
 
 module.exports = nextConfig
