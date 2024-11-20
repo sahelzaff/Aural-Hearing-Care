@@ -45,6 +45,10 @@ const assets = {
     Test_2: 'assets/Test_2.jpg',
     Test_3: 'assets/Test_3.jpg',
     play_button: 'assets/play_button.png',
+    products_hero: 'assets/products_hero.png',
+    about_banner: 'assets/about_banner.png',
+    about_info: 'assets/about_info.png',
+    about: 'assets/about.mp4',
   };
   
   export default assets;

@@ -1,310 +1,247 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import React from 'react';
+import { Box, Typography, Button, IconButton } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Typography, Box, Card, CardContent, Grid, CardMedia, Button, LinearProgress, Tooltip, IconButton } from '@mui/material';
-import DownloadIcon from '@mui/icons-material/Download';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import assets from '../../../public/assets/assets';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-const AnimatedCircularProgressbar = ({ value }) => {
-    const [animatedValue, setAnimatedValue] = useState(0);
-
-    useEffect(() => {
-        let animationFrame;
-        const animate = () => {
-            setAnimatedValue(prev => {
-                const newValue = prev + (value - prev) * 0.1;
-                if (Math.abs(newValue - value) < 0.1) {
-                    return value;
-                }
-                animationFrame = requestAnimationFrame(animate);
-                return newValue;
-            });
-        };
-        animationFrame = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(animationFrame);
-    }, [value]);
-
-    return (
-        <CircularProgressbar
-            value={animatedValue}
-            text={`${Math.round(animatedValue)}`}
-            styles={buildStyles({
-                textSize: '35px',
-                pathTransitionDuration: 1.5,
-                pathColor: '#3E98C7',
-                textColor: '#3E98C7',
-                trailColor: '#d6d6d6',
-            })}
-        />
+const HearingTestReport = ({ report }) => {
+    const consolidatedScore = Math.round(
+        (report.speech_recognition_score * 0.4) + (report.hearing_score * 0.6)
     );
-};
 
-const HearingCriteria = ({ score }) => {
-    const criteria = [
-        { range: "90-100", label: "Excellent Hearing", color: "#4CAF50" },
-        { range: "80-89", label: "Good Hearing", color: "#8BC34A" },
-        { range: "70-79", label: "Moderate Hearing", color: "#CDDC39" },
-        { range: "60-69", label: "Mild Hearing Loss", color: "#FFEB3B" },
-        { range: "50-59", label: "Moderate Hearing Loss", color: "#FFC107" },
-        { range: "40-49", label: "Moderately Severe Hearing Loss", color: "#FF9800" },
-        { range: "30-39", label: "Severe Hearing Loss", color: "#FF5722" },
-        { range: "20-29", label: "Profound Hearing Loss", color: "#F44336" }
-    ];
-
-    return (
-        <Card sx={{ mt: 2, height: '100%' }}>
-            <CardContent>
-                <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 'bold', mb: 2 }}>Hearing Assessment Criteria</Typography>
-                {criteria.map((criterion, index) => (
-                    <motion.div
-                        key={criterion.range}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <Typography sx={{ fontFamily: 'Poppins', width: '60px', fontSize: '0.8rem' }}>{criterion.range}</Typography>
-                            <Box sx={{ flexGrow: 1, mr: 1, width: '60px' }}>
-                                <LinearProgress
-                                    variant="determinate"
-                                    value={score >= parseInt(criterion.range.split('-')[0]) ? 100 : 0}
-                                    sx={{
-                                        height: 8,
-                                        borderRadius: 4,
-                                        backgroundColor: 'lightgrey',
-                                        '& .MuiLinearProgress-bar': {
-                                            borderRadius: 4,
-                                            backgroundColor: criterion.color,
-                                        }
-                                    }}
-                                />
-                            </Box>
-                            <Typography sx={{ fontFamily: 'Poppins', fontSize: '0.8rem', width: '180px' }}>{criterion.label}</Typography>
-                        </Box>
-                    </motion.div>
-                ))}
-            </CardContent>
-        </Card>
-    );
-};
-
-const RecommendedProducts = ({ products }) => {
-    const settings = {
-        dots: false,
-        infinite: true,
-        speed: 2000,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 2500,
-        pauseOnHover: true,
-    };
-
-    return (
-        <Card sx={{ mt: 2, height: '100%' }}>
-            <CardContent>
-                <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 'bold', mb: 2 }}>Recommended Products</Typography>
-                <Slider {...settings}>
-                    {products.map((product) => (
-                        <div key={product.id}>
-                            <CardMedia
-                                component="img"
-                                height="140"
-                                image={product.image}
-                                alt={product.name}
-                            />
-                            <Typography gutterBottom variant="h6" component="div" sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 1 }}>
-                                {product.name}
-                            </Typography>
-                            <Button variant="contained" color="primary" sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 1 }}>
-                                View Details
-                            </Button>
-                        </div>
-                    ))}
-                </Slider>
-            </CardContent>
-        </Card>
-    );
-};
-
-const HearingTestReport = () => {
-    const [report, setReport] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchReport = async () => {
-            try {
-                const response = await axios.get('https://aural-hearing-backend-production.up.railway.app/api/hearing-test/report');
-                setReport(response.data);
-            } catch (error) {
-                console.error('Error fetching report:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchReport();
-    }, []);
-
-    const getHearingAssessment = (score) => {
-        const adjustedScore = Math.max(20, score);
-        if (adjustedScore >= 90) return "Excellent Hearing";
-        if (adjustedScore >= 80) return "Good Hearing";
-        if (adjustedScore >= 70) return "Moderate Hearing";
-        if (adjustedScore >= 60) return "Mild Hearing Loss";
-        if (adjustedScore >= 50) return "Moderate Hearing Loss";
-        if (adjustedScore >= 40) return "Moderately Severe Hearing Loss";
-        if (adjustedScore >= 30) return "Severe Hearing Loss";
-        return "Profound Hearing Loss - Immediate Consultation Required";
-    };
-
-    const handleDownloadPDF = () => {
-        const input = document.getElementById('hearing-test-report');
-        const inputWidth = input.offsetWidth;
-        const inputHeight = input.offsetHeight;
-
-        html2canvas(input, {
-            logging: false,
-            useCORS: true,
-            width: inputWidth,
-            height: inputHeight,
-            scale: 2, // Increase scale for better quality
-        }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'px',
-                format: [canvas.width, canvas.height]
-            });
+    const handleDownload = async () => {
+        try {
+            const reportElement = document.getElementById('report-content');
             
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save(`${report.name}_hearing_test_report.pdf`);
-        });
+            const productsSection = reportElement.querySelector('#recommended-products');
+            if (productsSection) {
+                productsSection.style.display = 'none';
+            }
+
+            const canvas = await html2canvas(reportElement, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                windowWidth: reportElement.scrollWidth,
+                windowHeight: reportElement.scrollHeight,
+                onclone: (clonedDoc) => {
+                    const clonedElement = clonedDoc.getElementById('report-content');
+                    if (clonedElement) {
+                        clonedElement.style.padding = '40px';
+                        const gridElements = clonedElement.querySelectorAll('.grid');
+                        gridElements.forEach(grid => {
+                            grid.style.display = 'flex';
+                            grid.style.flexDirection = 'column';
+                            grid.style.gap = '20px';
+                        });
+                    }
+                }
+            });
+
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            pdf.addImage(
+                canvas.toDataURL('image/png'),
+                'PNG',
+                0,
+                0,
+                imgWidth,
+                imgHeight,
+                '',
+                'FAST'
+            );
+
+            pdf.save(`hearing_test_report_${report.name}.pdf`);
+
+            if (productsSection) {
+                productsSection.style.display = 'block';
+            }
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
+        }
     };
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <Typography variant="h4">Calculating Your Test Results. Please Wait...</Typography>
-            </Box>
-        );
-    }
-
-    if (!report) {
-        return <Typography variant="h4">No report available</Typography>;
-    }
-
-    const adjustedScore = Math.max(20, report.hearing_score);
-    const hearingAssessment = getHearingAssessment(adjustedScore);
-
-    const recommendedProducts = [
-        { id: 1, name: "Phonak Audéo", image: assets.product_1 },
-        { id: 2, name: "Phonak Naída", image: assets.product_2 },
-        { id: 3, name: "Phonak Sky", image: assets.product_3 },
+    const hearingCriteria = [
+        { range: '90-100', label: 'Excellent Hearing' },
+        { range: '80-89', label: 'Good Hearing' },
+        { range: '70-79', label: 'Moderate Hearing' },
+        { range: '60-69', label: 'Mild Hearing Loss' },
+        { range: '50-59', label: 'Moderate Hearing Loss' },
+        { range: '40-49', label: 'Moderately Severe Hearing Loss' },
+        { range: '30-39', label: 'Severe Hearing Loss' },
+        { range: '20-29', label: 'Profound Hearing Loss' }
     ];
+
+    const pdfStyles = `
+        @media print {
+            #recommended-products {
+                display: none !important;
+            }
+            .pdf-hide {
+                display: none !important;
+            }
+        }
+    `;
 
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            className="w-full max-w-[900px] bg-white p-8 pb-10 rounded-lg shadow-lg relative"
         >
-           
-            <Box p={2} sx={{ maxWidth: '830px', margin: '0 auto', position: 'relative' }} id="hearing-test-report">
-                <Grid container spacing={2}>
-                    <Grid item xs={12} container alignItems="center" justifyContent="space-between">
-                        <Grid item xs={12} sm={4}>
-                            <img src={assets.logo} alt="Aural Hearing Care Logo" style={{ height: 50, maxWidth: '100%' }} />
-                        </Grid>
-                        <Grid item xs={12} sm={4} textAlign="center">
-                            <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 'bold' }}>Hearing Test Results</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4} container justifyContent="flex-end" alignItems="center">
-                            <Box width={100} height={100}>
-                                <Box display="flex" flexDirection="column" alignItems="center">
-                                    <div style={{ fontFamily: 'Outfit', fontWeight: 'bold', width: '100%', height: '100%' }}>
-                                        <AnimatedCircularProgressbar value={adjustedScore} />
-                                    </div>
-                                    <Typography variant="subtitle2" align="center" sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 1, mb: 2, whiteSpace: 'nowrap' }}>
-                                        Hearing Score
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={6} mt={3}>
-                        <Card sx={{ backgroundColor: '#afcc1c', height: '100%' }}>
-                            <CardContent>
-                                <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 'bold', color: 'white' }}>Personal Information</Typography>
-                                <hr className="mt-1 mb-2 border-t-2 border-dotted border-white w-full" />
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Name: {report.name}</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Age: {report.age}</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Hearing Status: {report.hearing_status}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} sm={6} mt={3}>
-                        <Card sx={{ backgroundColor: '#04adf0', height: '100%' }}>
-                            <CardContent>
-                                <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 'bold', color: 'white' }}>Threshold Levels</Typography>
-                                <hr className="mt-1 mb-2 border-t-2 border-dotted border-white w-full" />
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Right Ear Threshold: {report.right_ear_threshold} dB</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Left Ear Threshold: {report.left_ear_threshold} dB</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Right Ear Loudest: {report.right_ear_loudest} dB</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', color: 'white' }}>Left Ear Loudest: {report.left_ear_loudest} dB</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 'bold' }}>Test Result</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold' }}>{hearingAssessment}</Typography>
-                                <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 2 }}>{report.recommendation}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <Box sx={{ height: '310px' }}>
-                            <HearingCriteria score={adjustedScore} />
-                            {/* <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 2 }}>{report.recommendation}</Typography> */}
-                            <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 2, fontSize: '14px' }}>
-                               This is a computer-generated hearing test. Please click on    the button below to schedule an appointment at your  nearest Aural Hearing Care Clinic.
+            <style>{pdfStyles}</style>
+            <IconButton 
+                onClick={handleDownload}
+                sx={{ 
+                    position: 'absolute',
+                    right: '32px',
+                    top: '10px',
+                    color: '#04adf0',
+                    '@media print': { display: 'none' }
+                }}
+            >
+                <FileDownloadIcon fontSize="large" />
+            </IconButton>
+
+            <div id="report-content" className="bg-white">
+                <div className="flex items-center justify-between mb-12 mt-10">
+                    <img src={assets.logo} alt="Aural Hearing Care" className="w-72" />
+                    <div className="text-center">
+                        <div className="w-24 h-24 rounded-full border-[6px] border-auralblue flex items-center justify-center">
+                            <Typography variant="h3" sx={{ fontFamily: 'Outfit', color: '#04adf0' }}>
+                                {consolidatedScore}
                             </Typography>
-                            <Box display="flex" justifyContent="space-between">
-                                <Button 
-                                    variant="contained" 
-                                    color="primary" 
-                                    sx={{ mt: 2, fontFamily: 'Poppins', fontWeight: 'semibold' }}
-                                >
-                                    Schedule Appointment
-                                </Button>
-                                <Button onClick={handleDownloadPDF} 
-                                    variant="contained" 
-                                    color="primary" 
-                                    sx={{ mt: 2, fontFamily: 'Poppins', fontWeight: 'semibold' }}
-                                >
-                                    Download Report
-                                </Button>
-                            </Box>
-                            <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'semibold', mt: 2, fontSize: '14px' }}>
-                               <Typography sx={{ fontFamily: 'Poppins', fontWeight: 'bold', color: '#afcc1c' }}>Aural Hearing Care</Typography>
-                               <Typography sx={{ fontFamily: 'Poppins', color: 'black', fontSize: '14px' }}>Shop no: 6, Pushpkunj Complex, beside YES BANK, near Hotel Centre Point, Ramdaspeth, Nagpur, Maharashtra 440010</Typography>
+                        </div>
+                        <Typography variant="subtitle2" sx={{ fontFamily: 'Poppins', mt: 1 }}>
+                            Hearing Score
+                        </Typography>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                    <div className="bg-auralyellow p-6 rounded-lg">
+                        <Typography variant="h6" sx={{ fontFamily: 'Outfit', color: 'white', mb: 2 }}>
+                            Personal Information
+                        </Typography>
+                        <hr className="border-white border-dotted border-2 mb-4" />
+                        <div className="space-y-2">
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Name: {report.name}
                             </Typography>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <RecommendedProducts products={recommendedProducts} />
-                    </Grid>
-                </Grid>
-            </Box>
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Age: {report.age}
+                            </Typography>
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Hearing Status: {report.hearing_status}
+                            </Typography>
+                        </div>
+                    </div>
+
+                    <div className="bg-auralblue p-6 rounded-lg">
+                        <Typography variant="h6" sx={{ fontFamily: 'Outfit', color: 'white', mb: 2 }}>
+                            Threshold Levels
+                        </Typography>
+                        <hr className="border-white border-dotted border-2 mb-4" />
+                        <div className="space-y-2">
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Left Ear Threshold: {report.avg_threshold} dB
+                            </Typography>
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Right Ear Threshold: {report.avg_threshold} dB
+                            </Typography>
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Left Ear Loudest: {report.avg_dynamic_range} dB
+                            </Typography>
+                            <Typography sx={{ fontFamily: 'Poppins', color: 'white' }}>
+                                Right Ear Loudest: {report.avg_dynamic_range} dB
+                            </Typography>
+                        </div>
+                    </div>
+                </div>
+
+                 <div className="mb-8">
+                    <Typography variant="h5" sx={{ fontFamily: 'Outfit', mb: 1, fontWeight: 'bold' }}>
+                        Test Result
+                    </Typography>
+                    <Typography sx={{ fontFamily: 'Poppins', color: '#ef4444' }}>
+                        {report.hearing_status} - {report.recommendation}
+                    </Typography>
+                </div>
+
+
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <Typography variant="h6" sx={{ fontFamily: 'Outfit', mb: 3 }}>
+                            Hearing Assessment Criteria
+                        </Typography>
+                        {hearingCriteria.map((criteria, index) => (
+                            <div key={index} className="flex items-center gap-4 mb-3">
+                                <span className="w-16 text-sm">{criteria.range}</span>
+                                <div className="flex-1 h-2 bg-gray-200 rounded">
+                                    <div
+                                        className="h-full rounded bg-auralblue"
+                                        style={{
+                                            width: `${consolidatedScore >= parseInt(criteria.range) ? '100%' : '0%'}`
+                                        }}
+                                    />
+                                </div>
+                                <span className="w-40 text-sm">{criteria.label}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div id="recommended-products" className="pdf-hide">
+                        <Typography variant="h6" sx={{ fontFamily: 'Outfit', mb: 3 }}>
+                            Recommended Products
+                        </Typography>
+                        <div className="flex flex-col items-center">
+                            <img 
+                                src={assets.product_1} 
+                                alt="Phonak Sky"
+                                className="w-48 h-48 object-contain mb-4"
+                            />
+                            <Typography 
+                                variant="subtitle1" 
+                                sx={{ fontFamily: 'Poppins', fontWeight: 'medium', mb: 2 }}
+                            >
+                                Phonak Sky
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#04adf0',
+                                    fontFamily: 'Poppins',
+                                    '&:hover': { backgroundColor: '#0398d3' }
+                                }}
+                            >
+                                VIEW DETAILS
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                        backgroundColor: '#04adf0',
+                        fontFamily: 'Poppins',
+                        mt: 4,
+                        '&:hover': { backgroundColor: '#0398d3' }
+                    }}
+                >
+                    SCHEDULE APPOINTMENT
+                </Button>
+            </div>
         </motion.div>
     );
 };

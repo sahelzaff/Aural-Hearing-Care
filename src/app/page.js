@@ -1,5 +1,5 @@
 import Footer from '@/Components/Global Components/Footer'
-import Navbar from '@/Components/Global Components/Navbar'
+import ClientNavbar from '@/Components/Global Components/ClientNavbar'
 import TopbarBelow from '@/Components/Global Components/TopbarBelow'
 import Appointment_booking from '@/Components/Homepage/Appointment_booking'
 import BrandLogoSlider from '@/Components/Homepage/Brand_logo_slider'
@@ -13,11 +13,11 @@ import Testimonial from '@/Components/Homepage/Testimonial'
 import Welcome from '@/Components/Homepage/Welcome'
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <>
     <TopbarBelow/>
-    <Navbar/>
+    <ClientNavbar/>
     <Slider/>
     <Welcome/>
     <BrandLogoSlider/>
@@ -32,4 +32,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

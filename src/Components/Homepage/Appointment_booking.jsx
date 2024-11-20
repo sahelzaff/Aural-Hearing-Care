@@ -149,7 +149,7 @@ const Specialized = () => {
                                     key={index}
                                     type="button"
                                     onClick={() => setFormData((prev) => ({ ...prev, timeSlot }))}
-                                    className={`px-4 py-2 border-[1px] rounded-full transition-colors duration-300 ease-in-out
+                                    className={`px-4 py-2 border-[1px] rounded-full transition-colors duration-300 ease-in-out font-montserrat flex items-center justify-center text-center
                                     ${formData.timeSlot === timeSlot ? 'bg-auralblue text-white' :
                                     bookedTimeSlots[timeSlot] ? 'bg-gray-400 text-gray-200 line-through' : 'bg-white text-auralblue border-auralblue hover:bg-auralblue hover:text-white'}`}
                                     disabled={bookedTimeSlots[timeSlot]}
@@ -164,7 +164,7 @@ const Specialized = () => {
                     <div className='flex justify-center mt-10'>
                         <button
                             type="submit"
-                            className='px-6 py-3 bg-auralblue text-white rounded-lg transition-colors duration-300 ease-in-out hover:bg-auralblue-light'
+                            className='px-6 py-3 bg-auralblue text-white rounded-lg transition-colors duration-300 ease-in-out hover:bg-auralblue-light font-montserrat'
                         >
                             Book Appointment
                         </button>

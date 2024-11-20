@@ -61,26 +61,52 @@ const Hearing_Test = () => {
   ]);
 
   const [showReport, setShowReport] = useState(false);
+  const [report, setReport] = useState(null);
+  const [audioError, setAudioError] = useState(null);
+
+  const [recommendedProducts] = useState([
+    {
+      id: 1,
+      name: "Premium Hearing Aid",
+      image: assets.product_1,
+      description: "Advanced digital hearing aid with noise cancellation"
+    },
+    {
+      id: 2,
+      name: "Wireless Earbuds",
+      image: assets.product_2,
+      description: "Bluetooth-enabled hearing assistance earbuds"
+    },
+    // Add more products as needed
+  ]);
 
   // Function to submit hearing test data
   const submitHearingTest = async () => {
     setIsLoading(true);
     try {
       const dataToSend = {
-        ...formData,
-        decibelLevels,
-        speechTestResults: speechTestResults.map(result => ({
-          round: result.round,
-          ear: result.ear,
-          selectedWords: result.selectedWords,
-          audioUrl: result.audioUrl
-        }))
+        full_name: formData.full_name,
+        age: formData.age,
+        contact: formData.contact,
+        answers: formData.answers,
+        toneTestResults: decibelLevels,
+        speechTestResults: speechTestResults
       };
 
-      await axios.post('https://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit', dataToSend);
-      setShowReport(true);
+      console.log('Submitting data:', dataToSend);  // Log the data being sent
+
+      const response = await axios.post('http://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit', dataToSend);
+      console.log('Response:', response.data);
+      if (response.data && response.data.report) {
+        setReport(response.data.report);
+        setShowReport(true);
+        setStep(13);
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
-      setSubmissionMessage('Error submitting hearing test: ' + error.message);
+      console.error('Error submitting hearing test:', error.response ? error.response.data : error.message);
+      setSubmissionMessage('Error submitting hearing test: ' + (error.response ? error.response.data.error : error.message));
     } finally {
       setIsLoading(false);
     }
@@ -218,13 +244,13 @@ const Hearing_Test = () => {
       const nextRound = currentRound + 1;
       setCurrentRound(nextRound);
       setSelectedWords([]);
-      setAudioUrl(`https://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/${nextRound}`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/${nextRound}`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words for the next round
     } else if (currentEar === 'right') {
       setCurrentEar('left');
       setCurrentRound(1);
       setSelectedWords([]);
-      setAudioUrl(`https://aural-hearing-backend-production.up.railway.app/api/speech-test/left/audio/1`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/left/audio/1`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words when switching ears
     } else {
       // Test complete, move to next step
@@ -234,41 +260,93 @@ const Hearing_Test = () => {
 
   const playTone = useCallback(() => {
     if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
+      if (currentAudio.oscillator) {
+        currentAudio.oscillator.stop();
+      }
+      if (currentAudio.audioContext && currentAudio.audioContext.state !== 'closed') {
+        currentAudio.audioContext.close();
+      }
     }
 
-    const audio = new Audio(`https://aural-hearing-backend-production.up.railway.app/api/hearing-test/play-tone?frequency=${currentTone.frequency}&ear=${currentTone.ear}`);
-    audio.volume = toneVolume / 100;
-    audio.play().catch(error => console.error("Audio playback failed:", error));
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(currentTone.frequency, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(toneVolume / 100, audioContext.currentTime + 0.1);
+    
+    oscillator.connect(gainNode);
+    
+    if (currentTone.ear === 'left') {
+      const merger = audioContext.createChannelMerger(2);
+      gainNode.connect(merger, 0, 0);
+      merger.connect(audioContext.destination);
+    } else if (currentTone.ear === 'right') {
+      const merger = audioContext.createChannelMerger(2);
+      gainNode.connect(merger, 0, 1);
+      merger.connect(audioContext.destination);
+    } else {
+      gainNode.connect(audioContext.destination);
+    }
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 1); // Play for 1 second
+    
+    setCurrentAudio({ oscillator, gainNode, audioContext });
 
-    setCurrentAudio(audio);
+    // Clean up after playback
+    setTimeout(() => {
+      if (audioContext.state !== 'closed') {
+        audioContext.close();
+      }
+    }, 1100); // Wait slightly longer than the tone duration
   }, [currentTone, toneVolume]);
 
   useEffect(() => {
     if (step === 10) {
       playTone();
     }
+    return () => {
+      if (currentAudio) {
+        if (currentAudio.oscillator) {
+          currentAudio.oscillator.stop();
+        }
+        if (currentAudio.audioContext && currentAudio.audioContext.state !== 'closed') {
+          currentAudio.audioContext.close();
+        }
+      }
+    };
   }, [step, currentTone, playTone]);
 
   const adjustToneVolume = (newVolume) => {
     setToneVolume(newVolume);
-    if (currentAudio) {
-      currentAudio.volume = newVolume / 100;
+    if (currentAudio && currentAudio.gainNode) {
+      currentAudio.gainNode.gain.setValueAtTime(newVolume / 100, currentAudio.audioContext.currentTime);
     }
   };
 
   const handleNextTone = () => {
     if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
+      if (currentAudio.oscillator) {
+        currentAudio.oscillator.stop();
+      }
+      if (currentAudio.audioContext && currentAudio.audioContext.state !== 'closed') {
+        currentAudio.audioContext.close();
+      }
       setCurrentAudio(null);
     }
 
-    setDecibelLevels((prev) => ({
-      ...prev,
-      [`${currentTone.frequency}Hz ${currentTone.ear} Ear ${toneAdjustmentType}`]: toneVolume,
-    }));
+    setDecibelLevels((prev) => {
+      const newLevels = {
+        ...prev,
+        [`${currentTone.frequency}Hz ${currentTone.ear} Ear ${toneAdjustmentType}`]: toneVolume,
+      };
+      console.log('Updated decibelLevels:', newLevels);  // Log the updated levels
+      return newLevels;
+    });
 
     if (currentTone.ear === 'right' && toneAdjustmentType === 'barely') {
       setToneAdjustmentType('loudest');
@@ -287,20 +365,34 @@ const Hearing_Test = () => {
   // Use useEffect to play audio when audioUrl changes
   useEffect(() => {
     if (audioRef.current && audioUrl) {
+      console.log("Attempting to load audio from URL:", audioUrl);
       audioRef.current.src = audioUrl;
       audioRef.current.load();
-      // Add a small delay before playing
-      setTimeout(() => {
-        const playPromise = audioRef.current.play();
-        
-        if (playPromise !== undefined) {
-          playPromise.then(_ => {
-            // Playback started successfully
-          }).catch(error => {
-            console.error("Audio playback failed:", error);
-          });
+
+      const playAudio = () => {
+        console.log("Audio loaded, attempting to play");
+        audioRef.current.play().catch(error => {
+          console.error("Audio playback failed:", error);
+        });
+      };
+
+      const handleError = (e) => {
+        console.error("Audio loading error:", e);
+        if (e.target.error) {
+          console.error("Error code:", e.target.error.code);
+          console.error("Error message:", e.target.error.message);
         }
-      }, 100);  // 100ms delay
+      };
+
+      audioRef.current.addEventListener('canplaythrough', playAudio);
+      audioRef.current.addEventListener('error', handleError);
+
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.removeEventListener('canplaythrough', playAudio);
+          audioRef.current.removeEventListener('error', handleError);
+        }
+      };
     }
   }, [audioUrl]);
 
@@ -642,24 +734,27 @@ const Hearing_Test = () => {
         return (
           <div className='h-full py-10'>
             <h2 className="font-outfit font-bold text-5xl text-auralyellow text-center pt-10 pb-6 w-full">Test Complete</h2>
-            <div className="flex flex-col items-center justify-center w-[900px] border-2 border-gray-100 shadow-xl rounded-lg">
-              <div className="flex flex-col items-start justify-start w-full p-8">
-                {showReport ? (
-                  <HearingTestReport />
-                ) : (
-                  <>
-                    <p className="font-poppins text-xl text-center mb-4 mx-auto">Your test has been successfully completed. Please click &apos;Submit&apos; to receive your results.</p>
-                    <button
-                      className="px-12 py-2 bg-auralblue text-white font-poppins text-xl font-bold text-center rounded-none mt-8 mx-auto"
-                      onClick={submitHearingTest}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Calculating Your Test Results. Please Wait...' : 'Submit Test Results'}
-                    </button>
-                  </>
-                )}
-              </div>
+            <div className="flex flex-col items-center justify-center w-[900px] border-2 border-gray-100 shadow-xl rounded-lg p-8">
+              <p className="font-poppins text-xl text-center mb-4">Your test has been successfully completed. Please click 'Submit' to receive your results.</p>
+              <button
+                className="px-12 py-2 bg-auralblue text-white font-poppins text-xl font-bold text-center rounded-none mt-8"
+                onClick={submitHearingTest}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Submitting...' : 'Submit Test Results'}
+              </button>
+              {submissionMessage && <p className="text-red-500 mt-4">{submissionMessage}</p>}
             </div>
+          </div>
+        );
+      case 13:
+        return (
+          <div className='flex justify-center items-center min-h-screen bg-gray-50 py-10'>
+            {report && (
+              <HearingTestReport 
+                report={report}
+              />
+            )}
           </div>
         );
       default:
@@ -671,13 +766,17 @@ const Hearing_Test = () => {
   useEffect(() => {
     if (step === 11) {
       setAllWords(shuffleArray([...allWords]));
-      setAudioUrl(`https://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/1`);
+      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/1`);
     }
   }, [step]);
 
   return (
     <div className="flex items-center justify-center">
-      {renderStep()}
+      {showReport ? (
+        <HearingTestReport report={report} />
+      ) : (
+        renderStep()
+      )}
     </div>
   );
 };

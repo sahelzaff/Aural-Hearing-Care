@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print {
+    /* Hide everything by default */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* Show only the report content */
+    #report-content,
+    #report-content * {
+        visibility: visible;
+    }
+    
+    /* Ensure colors are printed */
+    #report-content {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    /* Maintain background colors */
+    .bg-auralyellow {
+        background-color: #afcc1c !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .bg-auralblue {
+        background-color: #04adf0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    /* Hide print button when printing */
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Ensure text colors are preserved */
+    .text-white {
+        color: white !important;
+    }
+    
+    .text-auralblue {
+        color: #04adf0 !important;
+    }
+    
+    /* Set page margins */
+    @page {
+        margin: 20mm;
+        size: A4;
+    }
+}
+
+/* Add this to your existing styles */
+.hover-underline-animation {
+    display: inline-block;
+    position: relative;
+    color: #000;
+}
+
+.hover-underline-animation::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #04adf0;
+    transform-origin: center;
+    transition: transform 0.25s ease-out;
+}
+
+.hover-underline-animation:hover::after {
+    transform: scaleX(1);
+    transform-origin: center;
+}
+
+/* Add this new style for active links */
+.active-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #04adf0;
+    transform: scaleX(1);
+    transform-origin: center;
+}

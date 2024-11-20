@@ -1,43 +1,201 @@
-import React from 'react'
+'use client';
+
+import React, { useEffect, useState } from 'react'
 import { FaPhoneAlt } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { CiHeart } from "react-icons/ci";
 import assets from '../../../public/assets/assets'
 import '../Components.css'
-
+import { useSelector, useDispatch } from 'react-redux';
+import { useSession, signOut } from 'next-auth/react';
+import { login, logout } from '../../store/authSlice';
+import { useRouter } from 'next/navigation';
+import LoadingScreen from '../LoadingScreen';
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
 const Navbar = () => {
+    const { data: session, status } = useSession();
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const dispatch = useDispatch();
+    const [showDropdown, setShowDropdown] = useState(false);
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
+    const cartQuantity = useSelector((state) => state.cart.totalQuantity);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [hidden, setHidden] = useState(false);
+    const { scrollY } = useScroll();
+    const wishlistCount = useSelector((state) => state.wishlist.items.length);
+    const pathname = usePathname();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const previous = scrollY.getPrevious();
+        
+        // Set isScrolled based on whether we've scrolled at all
+        setIsScrolled(latest > 0);
+        
+        // Only hide/show navbar after we've scrolled a bit
+        if (latest > previous && latest > 150) {
+            setHidden(true);
+        } else {
+            setHidden(false);
+        }
+    });
+
+    useEffect(() => {
+        if (status === 'loading') {
+            setIsLoading(true);
+        } else {
+            if (status === 'authenticated' && session) {
+                dispatch(login({ email: session.user.email }));
+            } else if (status === 'unauthenticated') {
+                dispatch(logout());
+            }
+            setIsLoading(false);
+        }
+    }, [status, session, dispatch]);
+
+    const handleLogout = async () => {
+        setIsLoading(true);
+        await signOut({ redirect: false });
+        dispatch(logout());
+        router.push('http://localhost:4000');
+        setIsLoading(false);
+    };
+
+    // Get user's name from session
+    const userName = session?.user?.name || '';
+    const firstName = userName.split(' ')[0];
+
+    // Function to check if a path matches current pathname
+    const isActivePath = (path) => {
+        if (path === '/') {
+            return pathname === '/';
+        }
+        return pathname.startsWith(path);
+    };
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
+
     return (
-        <div className='w-full h-full Homepage'>
-            <div className='py-6 flex items-center justify-between'>
-                <Link href='/#'>
+        <motion.div
+            variants={{
+                visible: { y: 0 },
+                hidden: { y: "-100%" },
+            }}
+            animate={hidden ? "hidden" : "visible"}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className={`w-full bg-white z-50 ${isScrolled ? 'fixed top-0 left-0 right-0 shadow-sm' : ''}`}
+        >
+            <div className='w-full h-full Homepage'>
+                <div className='py-6 flex items-center justify-between'>
+                    <Link href='/#'>
+                        <div className='cursor-pointer'>
+                            <img src={assets.logo} className='w-56' alt="" srcSet="" />
+                        </div>
+                    </Link>
+                    <div className='flex flex-row space-x-4 items-center'>
+                        <ul className='flex flex-row space-x-8'>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/">
+                                    <span className={`hover-underline-animation ${isActivePath('/') ? 'active-link' : ''}`}>
+                                        Home
+                                    </span>
+                                </Link>
+                            </li>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/products">
+                                    <span className={`hover-underline-animation ${isActivePath('/products') ? 'active-link' : ''}`}>
+                                        Products
+                                    </span>
+                                </Link>
+                            </li>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/services">
+                                    <span className={`hover-underline-animation ${isActivePath('/services') ? 'active-link' : ''}`}>
+                                        Services
+                                    </span>
+                                </Link>
+                            </li>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/About-us">
+                                    <span className={`hover-underline-animation ${isActivePath('/About-us') ? 'active-link' : ''}`}>
+                                        About Us
+                                    </span>
+                                </Link>
+                            </li>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/contact">
+                                    <span className={`hover-underline-animation ${isActivePath('/contact') ? 'active-link' : ''}`}>
+                                        Contact
+                                    </span>
+                                </Link>
+                            </li>
+                        </ul>
+                        <div className='h-14 rounded-xl w-[3.5px] bg-auralblue'></div>
 
-                <div className='cursor-pointer'>
-                    <img src={assets.logo} className='w-56' alt="" srcset="" />
-                </div>
-                </Link>
-                <div className='flex flex-row space-x-4 items-center'>
-
-                    <ul className='flex flex-row space-x-8'>
-                        <li className='font-montserrat text-lg font-medium cursor-pointer' id='underline2'>Home</li>
-                        <li className='font-montserrat text-lg font-medium cursor-pointer' id='underline2'>Products</li>
-                        <li className='font-montserrat text-lg font-medium cursor-pointer' id='underline2'>Services</li>
-                        <li className='font-montserrat text-lg font-medium cursor-pointer' id='underline2'>About Us</li>
-                        <li className='font-montserrat text-lg font-medium cursor-pointer' id='underline2'>Contact</li>
-                    </ul>
-                    <div className='h-14 rounded-xl w-[3.5px] bg-auralblue'></div>
-
-                    <div className='flex flex-row space-x-5 pr-5'>
-                        <CiHeart className='text-3xl text-gray-600 cursor-pointer ' />
-                        <HiOutlineShoppingCart className='text-3xl text-gray-600 cursor-pointer' />
-                        <CgProfile className='text-3xl text-gray-600 cursor-pointer' />
+                        <div className='flex flex-row space-x-5 pr-5 items-center'>
+                            <Link href="/wishlist" className="relative">
+                                <CiHeart className='text-3xl text-gray-600 cursor-pointer' />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-auralblue text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                        {wishlistCount}
+                                    </span>
+                                )}
+                            </Link>
+                            <Link href="/cart" className="relative">
+                                <HiOutlineShoppingCart className='text-3xl text-gray-600 cursor-pointer' />
+                                {cartQuantity > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-auralblue text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                        {cartQuantity}
+                                    </span>
+                                )}
+                            </Link>
+                            {isAuthenticated ? (
+                                <div className="relative">
+                                    <CgProfile 
+                                        className='text-3xl text-gray-600 cursor-pointer' 
+                                        onMouseEnter={() => setShowDropdown(true)}
+                                        onMouseLeave={() => setShowDropdown(false)}
+                                    />
+                                    {showDropdown && (
+                                        <div 
+                                            className="absolute right-[-50px] w-44 bg-white rounded-md shadow-lg py-1 z-10 font-montserrat font-medium text-sm"
+                                            onMouseEnter={() => setShowDropdown(true)}
+                                            onMouseLeave={() => setShowDropdown(false)}
+                                        >
+                                            <div className="block px-4 py-2 text-sm text-auralblue font-medium border-b border-gray-100 font-montserrat">
+                                                Hi, {firstName}
+                                            </div>
+                                            <Link href="/my-info" className="block px-4 py-2 text-sm text-gray-700 font-medium hover:bg-auralyellow hover:text-white font-montserrat">
+                                                My Info
+                                            </Link>
+                                            <Link href="/my-orders" className="block px-4 py-2 text-sm text-gray-700 font-medium hover:bg-auralyellow hover:text-white font-montserrat">
+                                                My Orders
+                                            </Link>
+                                            <Link href="/saved-address" className="block px-4 py-2 text-sm text-gray-700 font-medium hover:bg-auralyellow hover:text-white">
+                                                Saved Address
+                                            </Link>
+                                            <p className="block px-4 py-2 text-sm text-gray-700 font-medium hover:bg-auralyellow hover:text-white cursor-pointer font-montserrat" onClick={handleLogout}>
+                                                Log Out 
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <Link href="/login">
+                                    <button className='px-4 py-3 rounded-full bg-transparent text-black border-2 border-auralblue hover:bg-auralblue hover:text-white font-montserrat font-medium'>Sign In / Sign Up</button>
+                                </Link>
+                            )}
+                        </div>
                     </div>
-                    {/* <button type="button" className=' font-medium flex flex-row gap-2 items-center text-white py-3 px-3 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out '><FaPhoneAlt /> <span>+91 98234 49422</span></button> */}
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

@@ -43,7 +43,7 @@ const Specialized = () => {
      
       <div className="flex justify-center mt-4">
         <button 
-          className="px-4 py-2 bg-auralblue text-white rounded-lg transition-colors duration-300 ease-in-out hover:bg-auralblue-light" 
+          className="px-4 py-2 bg-auralblue text-white rounded-lg transition-colors duration-300 ease-in-out hover:bg-auralblue-light font-montserrat" 
           onClick={handleViewMoreClick}
         >
           {isExpanded ? 'View Less' : 'View More'}
