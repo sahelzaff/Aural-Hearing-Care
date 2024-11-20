@@ -8,12 +8,10 @@ const nextConfig = {
     config.resolve.fallback = { fs: false };
     return config;
   },
-  experimental: {
-    turbotrace: {
-      logLevel: 'error'
-    }
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
-  output: 'standalone',
 }
 
 module.exports = nextConfig
