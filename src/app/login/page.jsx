@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
@@ -8,6 +8,14 @@ import LoadingScreen from '../../Components/LoadingScreen';
 import './login.css';
 
 export default function Login() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(true);
