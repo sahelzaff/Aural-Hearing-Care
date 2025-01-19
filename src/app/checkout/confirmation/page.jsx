@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
@@ -8,8 +8,17 @@ import confetti from 'canvas-confetti';
 import TopbarBelow from '@/Components/Global Components/TopbarBelow';
 import ClientNavbar from '@/Components/Global Components/ClientNavbar';
 import Footer from '@/Components/Global Components/Footer';
+import LoadingScreen from '@/Components/LoadingScreen';
 
-const OrderConfirmation = () => {
+export default function CheckoutConfirmation() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <CheckoutConfirmationContent />
+    </Suspense>
+  );
+}
+
+function CheckoutConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
@@ -173,6 +182,4 @@ const OrderConfirmation = () => {
       <Footer />
     </>
   );
-};
-
-export default OrderConfirmation; 
+} 
