@@ -24,7 +24,7 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-auralyellow p-8 rounded-lg">
+    <div className="bg-auralyellow/80 p-8 rounded-lg">
       <h2 className="text-3xl font-normal mb-6 font-poppins text-gray-700">Send us a message</h2>
       <p className="text-sm mb-6 font-poppins text-gray-700">
         <span className="text-red-500">*</span> indicates required fields
