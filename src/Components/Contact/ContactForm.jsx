@@ -86,13 +86,15 @@ const ContactForm = () => {
             required
           ></textarea>
         </div>
-
-        <button
+        <motion.button
           type="submit"
           className="w-full bg-white text-black py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors font-poppins"
+          whileHover={{ scale: 1.05, boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 300 }}
         >
           SUBMIT
-        </button>
+        </motion.button>
       </form>
     </div>
   );
