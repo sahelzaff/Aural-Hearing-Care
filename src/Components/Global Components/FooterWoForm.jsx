@@ -17,62 +17,6 @@ const Footer = () => {
 
     return (
         <footer className="w-full">
-            {/* Request Callback Section */}
-            <div
-                className="relative h-auto py-20 overflow-hidden bg-fixed bg-center bg-cover"
-                style={{ backgroundImage: `url(${assets.request_callback})` }}
-            >
-                <div className="absolute inset-0 bg-black opacity-50"></div>
-                <div className="relative z-10 flex items-center justify-center h-full w-full">
-                    {!formSubmitted ? (
-                        <form onSubmit={handleSubmit(onSubmit)} className="bg-white text-black py-10 w-[600px] px-10 rounded-lg shadow-lg">
-                            <h2 className="text-4xl font-semibold font-outfit text-center text-auralyellow mb-6">Request a Call Back</h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block mb-1 text-sm font-medium font-poppins">Name</label>
-                                    <input
-                                        {...register('name', { required: true })}
-                                        type="text"
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-auralyellow"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block mb-1 text-sm font-medium font-poppins">Email</label>
-                                    <input
-                                        {...register('email', { required: true })}
-                                        type="email"
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-auralyellow"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block mb-1 text-sm font-medium font-poppins">Phone Number</label>
-                                    <input
-                                        {...register('phone', { required: true })}
-                                        type="tel"
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-auralyellow"
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                type="submit"
-                                className="mt-6 w-full py-2 font-montserrat font-semibold bg-auralyellow text-white rounded transition-colors hover:bg-opacity-90"
-                            >
-                                Submit
-                            </button>
-                        </form>
-                    ) : (
-                        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                            <div className="bg-green-500 text-white rounded-full p-4 w-16 h-16 mx-auto mb-4">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <p className="text-xl font-poppins font-semibold">Thank You! We'll contact you soon.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Main Footer Section */}
             <div className="bg-auralblue text-white">
                 <div className=" mx-auto px-4 py-12">

@@ -3,12 +3,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, clearCart } from '@/store/cartSlice';
 import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import TopbarBelow from '@/Components/Global Components/TopbarBelow';
 import Navbar from '@/Components/Global Components/Navbar';
 import Footer from '@/Components/Global Components/Footer';
+import { useRouter } from 'next/navigation';
 
 const CartPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const { items, totalQuantity, totalAmount } = useSelector((state) => state.cart);
 
   const handleIncreaseQuantity = (item) => {
@@ -17,6 +21,15 @@ const CartPage = () => {
 
   const handleDecreaseQuantity = (id) => {
     dispatch(removeFromCart(id));
+  };
+
+  const handleCheckout = async () => {
+    if (status === 'authenticated') {
+      router.push('/checkout');
+    } else {
+      const returnUrl = encodeURIComponent('/checkout');
+      router.push(`/login?redirect=${returnUrl}`);
+    }
   };
 
   if (items.length === 0) {
@@ -60,7 +73,6 @@ const CartPage = () => {
                       alt={item.name} 
                       className="w-24 h-24 object-cover rounded-md"
                     />
-                    
                     <div className="flex-1 ml-6">
                       <h3 className="text-lg font-semibold font-outfit">{item.name}</h3>
                       <p className="text-gray-600 font-poppins">{item.brand}</p>
@@ -117,7 +129,7 @@ const CartPage = () => {
 
                 <button 
                   className="w-full bg-auralyellow text-white py-3 rounded-md font-medium mt-6 hover:bg-opacity-90 transition-colors"
-                  onClick={() => {/* Handle checkout */}}
+                  onClick={handleCheckout}
                 >
                   Proceed to Checkout
                 </button>

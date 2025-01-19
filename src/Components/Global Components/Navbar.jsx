@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 import { CiHeart } from "react-icons/ci";
 import assets from '../../../public/assets/assets'
+import Image from 'next/image';
 import '../Components.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { useSession, signOut } from 'next-auth/react';
@@ -59,9 +60,12 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         setIsLoading(true);
-        await signOut({ redirect: false });
+        await signOut({ 
+            redirect: false,
+            callbackUrl: '/'
+        });
         dispatch(logout());
-        router.push('http://localhost:4000');
+        router.push('/');
         setIsLoading(false);
     };
 
@@ -94,9 +98,14 @@ const Navbar = () => {
             <div className='w-full h-full Homepage'>
                 <div className='py-6 flex items-center justify-between'>
                     <Link href='/#'>
-                        <div className='cursor-pointer'>
-                            <img src={assets.logo} className='w-56' alt="" srcSet="" />
-                        </div>
+                        <Image
+                            src={assets.logo}
+                            alt="Aural Hearing Care Logo"
+                            width={250}
+                            height={80}
+                            priority
+                            className="object-contain"
+                        />
                     </Link>
                     <div className='flex flex-row space-x-4 items-center'>
                         <ul className='flex flex-row space-x-8'>
@@ -108,10 +117,8 @@ const Navbar = () => {
                                 </Link>
                             </li>
                             <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
-                                <Link href="/products">
-                                    <span className={`hover-underline-animation ${isActivePath('/products') ? 'active-link' : ''}`}>
-                                        Products
-                                    </span>
+                                <Link href="/products" className={`${isActivePath('/products') ? 'text-auralblue' : 'text-black'} hover-underline-animation`}>
+                                    Products
                                 </Link>
                             </li>
                             <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
@@ -128,11 +135,19 @@ const Navbar = () => {
                                     </span>
                                 </Link>
                             </li>
+                            {/* <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/online-hearing-test" className={`${isActivePath('/online-hearing-test') ? 'text-auralblue' : 'text-black'} hover-underline-animation`}>
+                                    Online Hearing Test
+                                </Link>
+                            </li> */}
                             <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
-                                <Link href="/contact">
-                                    <span className={`hover-underline-animation ${isActivePath('/contact') ? 'active-link' : ''}`}>
-                                        Contact
-                                    </span>
+                                <Link href="/blog" className={`${isActivePath('/blog') ? 'text-auralblue' : 'text-black'} hover-underline-animation`}>
+                                    Blog
+                                </Link>
+                            </li>
+                            <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
+                                <Link href="/contact" className={`${isActivePath('/contact') ? 'text-auralblue' : 'text-black'} hover-underline-animation`}>
+                                    Contact
                                 </Link>
                             </li>
                         </ul>
@@ -164,7 +179,7 @@ const Navbar = () => {
                                     />
                                     {showDropdown && (
                                         <div 
-                                            className="absolute right-[-50px] w-44 bg-white rounded-md shadow-lg py-1 z-10 font-montserrat font-medium text-sm"
+                                            className="absolute right-[-50px] w-44 bg-white rounded-md shadow-lg py-1 font-montserrat font-medium text-sm z-50"
                                             onMouseEnter={() => setShowDropdown(true)}
                                             onMouseLeave={() => setShowDropdown(false)}
                                         >

@@ -72,4 +72,9 @@ export default NextAuth({
       },
     },
   },
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      // You can add any additional logic here if needed
+    },
+  }
 });

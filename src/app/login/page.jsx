@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 import { login } from '../../store/authSlice';
 import LoadingScreen from '../../Components/LoadingScreen';
 import './login.css';
@@ -15,34 +15,42 @@ export default function Login() {
     const router = useRouter();
     const dispatch = useDispatch();
     const { data: session, status } = useSession();
-    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get('redirect');
 
     useEffect(() => {
         if (status === 'loading') {
             setIsLoading(true);
-        } else {
-            setIsLoading(false);
-            if (status === 'authenticated' || isAuthenticated) {
-                router.push('http://localhost:3000');
-            }
+            return;
         }
-    }, [status, isAuthenticated, router]);
+
+        if (status === 'authenticated' && session) {
+            dispatch(login({ email: session.user.email }));
+            router.replace(redirectUrl || '/');
+        }
+        setIsLoading(false);
+    }, [status, session, dispatch, router, redirectUrl]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        const result = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
-        });
 
-        if (result.error) {
-            console.error(result.error);
+        try {
+            const result = await signIn('credentials', {
+                redirect: false,
+                email,
+                password,
+            });
+
+            if (result?.error) {
+                console.error('Login failed:', result.error);
+                setIsLoading(false);
+            } else {
+                dispatch(login({ email }));
+            }
+        } catch (error) {
+            console.error('Login error:', error);
             setIsLoading(false);
-        } else {
-            dispatch(login({ email }));
-            router.push('http://localhost:4000');
         }
     };
 
@@ -114,7 +122,7 @@ export default function Login() {
                     <span className="span">Forgot password?</span>
                 </div>
                 <button className="button-submit" type="submit">Sign In</button>
-                <p className="p">Don't have an account? <span className="span">Sign Up</span></p>
+                <p className="p">Don't have an account? <span className="span" onClick={() => router.push('http://localhost:3000/signup')} style={{cursor: 'pointer'}}>Sign Up</span></p>
                 <p className="p line">Or With</p>
 
                 <div className="flex-row">

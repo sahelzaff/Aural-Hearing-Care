@@ -1,6 +1,5 @@
-
 const assets = {
-    logo: 'assets/logo.png',
+    logo: '/assets/logo.png',
     main_banner_1: 'assets/main_banner_1.png',
     main_banner_2: 'assets/main_banner_2.png',
     main_banner_3: 'assets/main_banner_3.png',
@@ -49,6 +48,7 @@ const assets = {
     about_banner: 'assets/about_banner.png',
     about_info: 'assets/about_info.png',
     about: 'assets/about.mp4',
+    contact_hero: 'assets/contact_hero.png',
   };
   
   export default assets;

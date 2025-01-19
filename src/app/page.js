@@ -19,7 +19,7 @@ const Page = () => {
     <TopbarBelow/>
     <ClientNavbar/>
     <Slider/>
-    <Welcome/>
+    <Welcome className='mt-20'/>
     <BrandLogoSlider/>
     <First_visit/>
     <Specialized/>
@@ -27,7 +27,7 @@ const Page = () => {
     <Testimonial/>
     <Products/>
     <Contact/>
-    <Footer/>
+    <Footer/> 
     </>
   )
 }

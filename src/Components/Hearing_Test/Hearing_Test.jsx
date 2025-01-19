@@ -95,7 +95,7 @@ const Hearing_Test = () => {
 
       console.log('Submitting data:', dataToSend);  // Log the data being sent
 
-      const response = await axios.post('http://aural-hearing-backend-production.up.railway.app/api/hearing-test/submit', dataToSend);
+      const response = await axios.post('http://localhost:5000/api/hearing-test/submit', dataToSend);
       console.log('Response:', response.data);
       if (response.data && response.data.report) {
         setReport(response.data.report);
@@ -244,13 +244,13 @@ const Hearing_Test = () => {
       const nextRound = currentRound + 1;
       setCurrentRound(nextRound);
       setSelectedWords([]);
-      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/${nextRound}`);
+      setAudioUrl(`http://localhost:5000/api/speech-test/${currentEar}/audio/${nextRound}`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words for the next round
     } else if (currentEar === 'right') {
       setCurrentEar('left');
       setCurrentRound(1);
       setSelectedWords([]);
-      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/left/audio/1`);
+      setAudioUrl(`http://localhost:5000/api/speech-test/left/audio/1`);
       setAllWords(shuffleArray([...allWords]));  // Shuffle words when switching ears
     } else {
       // Test complete, move to next step
@@ -766,7 +766,7 @@ const Hearing_Test = () => {
   useEffect(() => {
     if (step === 11) {
       setAllWords(shuffleArray([...allWords]));
-      setAudioUrl(`http://aural-hearing-backend-production.up.railway.app/api/speech-test/${currentEar}/audio/1`);
+      setAudioUrl(`http://localhost:5000/api/speech-test/${currentEar}/audio/1`);
     }
   }, [step]);
 

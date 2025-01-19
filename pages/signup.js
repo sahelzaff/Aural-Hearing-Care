@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { signupSchema } from '@/lib/validations';
 import { toast } from 'react-hot-toast';
-import { FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaCheck, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { AiFillApple } from 'react-icons/ai';
 import '@/app/signup/signup.css';
@@ -38,6 +38,7 @@ export default function Signup() {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const router = useRouter();
   const [selectedCountryCode, setSelectedCountryCode] = useState('+91'); // Default to India
+  const [step, setStep] = useState(1);
 
   // Convert countries object to array and sort by name
   const countryList = Object.entries(countries).map(([code, country]) => ({
@@ -100,8 +101,31 @@ export default function Signup() {
     </div>
   );
 
+  const handleNextStep = () => {
+    const stepErrors = {};
+    if (!formData.first_name) stepErrors.first_name = 'First name is required';
+    if (!formData.last_name) stepErrors.last_name = 'Last name is required';
+    if (!formData.email) stepErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) stepErrors.email = 'Invalid email format';
+
+    if (Object.keys(stepErrors).length === 0) {
+      setStep(2);
+    } else {
+      setErrors(stepErrors);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setStep(1);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (step === 1) {
+      handleNextStep();
+      return;
+    }
+
     if (!validateForm()) {
       toast.error('Please fix the validation errors');
       return;
@@ -145,178 +169,202 @@ export default function Signup() {
   };
 
   return (
-    <div className="signup-container">
-      <form className="formsignup" onSubmit={handleSubmit}>
-        <h2 className="signup-title">Create Account</h2>
+    <div className="login">
+      <div className="">
+        <form className="formsignup" onSubmit={handleSubmit}>
+          <h2 className="signup-title">Create Account</h2>
 
-        <div className="signup-grid">
-          <div className="signup-field">
-            <label>First Name</label>
-            <div className="inputForm">
-              <input
-                type="text"
-                name="first_name"
-                className="input"
-                placeholder="First Name"
-                value={formData.first_name}
-                onChange={handleChange}
-              />
-            </div>
-            {errors.first_name && <p className="error-text">{errors.first_name}</p>}
-          </div>
-
-          <div className="signup-field">
-            <label>Last Name</label>
-            <div className="inputForm">
-              <input
-                type="text"
-                name="last_name"
-                className="input"
-                placeholder="Last Name"
-                value={formData.last_name}
-                onChange={handleChange}
-              />
-            </div>
-            {errors.last_name && <p className="error-text">{errors.last_name}</p>}
-          </div>
-        </div>
-
-        <div className="signup-grid">
-          <div className="signup-field">
-            <label>Email</label>
-            <div className="inputForm">
-              <input
-                type="email"
-                name="email"
-                className="input"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            {errors.email && <p className="error-text">{errors.email}</p>}
-          </div>
-
-          <div className="signup-field">
-            <label>Mobile Number</label>
-            <PhoneInput
-              country={'in'}
-              value={formData.mobile}
-              onChange={phone => {
-                setFormData(prev => ({
-                  ...prev,
-                  mobile: phone
-                }));
-              }}
-              inputClass="phone-input"
-              containerClass="phone-container"
-              buttonClass="country-dropdown"
-              enableSearch={true}
-              searchPlaceholder="Search country..."
-              disableSearchIcon={false}
-              searchNotFound="No country found"
-              preferredCountries={['in', 'us', 'gb', 'ca', 'au']}
-            />
-            {errors.mobile && <p className="error-text">{errors.mobile}</p>}
-          </div>
-        </div>
-
-        <div className="signup-grid">
-          <div className="signup-field">
-            <label>Password</label>
-            <div className="inputForm password-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                className="input"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-              />
-              <div className="password-toggle">
-                {showPassword ? (
-                  <FaEyeSlash onClick={() => setShowPassword(false)} />
-                ) : (
-                  <FaEye onClick={() => setShowPassword(true)} />
-                )}
-              </div>
-              {isPasswordFocused && (
-                <div className="password-validation-box">
-                  <ValidationItem 
-                    isValid={passwordValidation.length} 
-                    text="At least 8 characters" 
-                  />
-                  <ValidationItem 
-                    isValid={passwordValidation.uppercase} 
-                    text="One uppercase letter" 
-                  />
-                  <ValidationItem 
-                    isValid={passwordValidation.number} 
-                    text="One number" 
-                  />
-                  <ValidationItem 
-                    isValid={passwordValidation.special} 
-                    text="One special character" 
-                  />
+          {step === 1 ? (
+            <>
+              <div className="flex flex-col space-y-6">
+                <div className="signup-field">
+                  <label>First Name</label>
+                  <div className="inputForm">
+                    <input
+                      type="text"
+                      name="first_name"
+                      className="input"
+                      placeholder="First Name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  {errors.first_name && <p className="error-text">{errors.first_name}</p>}
                 </div>
-              )}
-            </div>
-          </div>
 
-          <div className="signup-field">
-            <label>Confirm Password</label>
-            <div className="inputForm password-field">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                className="input"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-              <div className="password-toggle">
-                {showConfirmPassword ? (
-                  <FaEyeSlash onClick={() => setShowConfirmPassword(false)} />
-                ) : (
-                  <FaEye onClick={() => setShowConfirmPassword(true)} />
-                )}
+                <div className="signup-field">
+                  <label>Last Name</label>
+                  <div className="inputForm">
+                    <input
+                      type="text"
+                      name="last_name"
+                      className="input"
+                      placeholder="Last Name"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  {errors.last_name && <p className="error-text">{errors.last_name}</p>}
+                </div>
+
+                <div className="signup-field">
+                  <label>Email</label>
+                  <div className="inputForm">
+                    <input
+                      type="email"
+                      name="email"
+                      className="input"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  {errors.email && <p className="error-text">{errors.email}</p>}
+                </div>
+
+                <button 
+                  type="button" 
+                  className="signup-button"
+                  onClick={handleNextStep}
+                >
+                  Next
+                </button>
+
+                <div className="social-buttons">
+                  <button type="button" className="social-button">
+                    <FcGoogle size={20} />
+                    <span>Sign up with Google</span>
+                  </button>
+                  <button type="button" className="social-button">
+                    <AiFillApple size={20} />
+                    <span>Sign up with Apple</span>
+                  </button>
+                </div>
               </div>
-            </div>
-            {formData.confirmPassword && (
-              <div className={`password-match-indicator ${passwordsMatch ? 'match' : 'mismatch'}`}>
-                {passwordsMatch ? (
-                  <>
-                    <FaCheck /> Passwords match
-                  </>
-                ) : (
-                  <>
-                    <FaTimes /> Passwords don't match
-                  </>
-                )}
+            </>
+          ) : (
+            <>
+              <div className="relative">
+                <FaArrowLeft 
+                  size={20} 
+                  onClick={handlePrevStep}
+                  className="absolute left-0 top-0 p-2 cursor-pointer"
+                />
               </div>
-            )}
-          </div>
-        </div>
 
-        <button className="signup-button" type="submit">Sign Up</button>
+              <div className="flex flex-col space-y-6 mt-10">
+                <div className="signup-field">
+                  <label>Mobile Number</label>
+                  <PhoneInput
+                    country={'in'}
+                    value={formData.mobile}
+                    onChange={phone => {
+                      setFormData(prev => ({
+                        ...prev,
+                        mobile: phone
+                      }));
+                    }}
+                    inputClass="phone-input"
+                    containerClass="phone-container"
+                    buttonClass="country-dropdown"
+                    enableSearch={true}
+                    searchPlaceholder="Search country..."
+                    disableSearchIcon={false}
+                    searchNotFound="No country found"
+                    preferredCountries={['in', 'us', 'gb', 'ca', 'au']}
+                  />
+                  {errors.mobile && <p className="error-text">{errors.mobile}</p>}
+                </div>
 
-        <div className="social-buttons">
-          <button type="button" className="social-button">
-            <FcGoogle size={20} />
-            <span>Sign up with Google</span>
-          </button>
-          <button type="button" className="social-button">
-            <AiFillApple size={20} />
-            <span>Sign up with Apple</span>
-          </button>
-        </div>
-        
-        <p className="signup-footer">
-          Already have an account? <span onClick={() => router.push('/login')}>Sign In</span>
-        </p>
-      </form>
+                <div className="signup-field">
+                  <label>Password</label>
+                  <div className="inputForm password-field">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      className="input"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      onFocus={() => setIsPasswordFocused(true)}
+                      onBlur={() => setIsPasswordFocused(false)}
+                    />
+                    <div className="password-toggle">
+                      {showPassword ? (
+                        <FaEyeSlash onClick={() => setShowPassword(false)} />
+                      ) : (
+                        <FaEye onClick={() => setShowPassword(true)} />
+                      )}
+                    </div>
+                    {isPasswordFocused && (
+                      <div className="password-validation-box">
+                        <ValidationItem 
+                          isValid={passwordValidation.length} 
+                          text="At least 8 characters" 
+                        />
+                        <ValidationItem 
+                          isValid={passwordValidation.uppercase} 
+                          text="One uppercase letter" 
+                        />
+                        <ValidationItem 
+                          isValid={passwordValidation.number} 
+                          text="One number" 
+                        />
+                        <ValidationItem 
+                          isValid={passwordValidation.special} 
+                          text="One special character" 
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="signup-field">
+                  <label>Confirm Password</label>
+                  <div className="inputForm password-field">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      className="input"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
+                    <div className="password-toggle">
+                      {showConfirmPassword ? (
+                        <FaEyeSlash onClick={() => setShowConfirmPassword(false)} />
+                      ) : (
+                        <FaEye onClick={() => setShowConfirmPassword(true)} />
+                      )}
+                    </div>
+                  </div>
+                  {formData.confirmPassword && (
+                    <div className={`password-match-indicator ${passwordsMatch ? 'match' : 'mismatch'}`}>
+                      {passwordsMatch ? (
+                        <>
+                          <FaCheck /> Passwords match
+                        </>
+                      ) : (
+                        <>
+                          <FaTimes /> Passwords don't match
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <button type="submit" className="signup-button">
+                  Sign Up
+                </button>
+              </div>
+            </>
+          )}
+
+          <p className="signup-footer">
+            Already have an account? <span onClick={() => router.push('/login')}>Sign In</span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
