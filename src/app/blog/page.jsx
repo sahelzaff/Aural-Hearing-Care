@@ -6,6 +6,7 @@ import ClientNavbar from '@/Components/Global Components/ClientNavbar';
 import Footer from '@/Components/Global Components/Footer';
 import BlogCard from '@/Components/Blog/BlogCard';
 import { blogs, categories } from '@/data/blogs';
+import assets from 'public/assets/assets';
 
 const BlogPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -23,14 +24,19 @@ const BlogPage = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative h-[40vh] bg-gray-900 flex items-center justify-center text-center"
+        className="relative h-[55vh] bg-gray-900 flex items-end justify-start text-left"
+        style={{
+          backgroundImage: `url(${assets.blog_hero})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-auralblue to-auralyellow opacity-10"></div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4">
+        <div className="absolute inset-0 bg-black opacity-30"></div>
+        <div className="relative z-10 max-w-4xl px-4 pb-8">
           <motion.h1
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="text-4xl md:text-5xl font-bold text-white mb-4 font-outfit"
+            className="text-4xl md:text-5xl font-bold text-white mb-2 font-outfit"
           >
             Our Blog
           </motion.h1>
@@ -38,27 +44,30 @@ const BlogPage = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-gray-200 font-poppins"
+            className="text-xl text-gray-200 font-outfit"
           >
             Stay updated with the latest in hearing healthcare
           </motion.p>
         </div>
       </motion.div>
 
+      {/* Breadcrumbs */}
+      <nav className="bg-gradient-to-r from-gray-50 to-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center space-x-2 text-sm font-poppins">
+            <a href="/" className="text-gray-600 hover:text-auralblue transition-colors">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="text-auralblue font-medium">Blog</span>
+          </div>
+        </div>
+      </nav>
+
       {/* Category Filter */}
       <div className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap gap-4 justify-center">
-            <button
-              onClick={() => setSelectedCategory('All')}
-              className={`px-6 py-2 rounded-full font-medium transition-colors ${
-                selectedCategory === 'All'
-                  ? 'bg-auralblue text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              All
-            </button>
             {categories.map((category) => (
               <button
                 key={category}

@@ -357,7 +357,7 @@ export const blogs = [
       role: "Senior Audiologist",
       image: "/assets/doctor.jpg"
     },
-    mainImage: "/assets/hearing_testing.svg",
+    mainImage: "/assets/understanding_hearing_loss.png",
     category: "Health Tips",
     tags: ["Hearing Loss", "Child Development", "Healthcare", "Pediatric Care"],
     publishDate: "2024-03-17",
@@ -481,7 +481,7 @@ export const blogs = [
       role: "Senior Audiologist",
       image: "/assets/doctor.jpg"
     },
-    mainImage: "/assets/auditory.png",
+    mainImage: "/assets/understanding_tinnitus.png",
     category: "Health Tips",
     tags: ["Tinnitus", "Hearing Health", "Medical Conditions", "Treatment Options"],
     publishDate: "2024-03-18",
@@ -629,7 +629,7 @@ export const blogs = [
       role: "Senior Audiologist",
       image: "/assets/doctor.jpg"
     },
-    mainImage: "/assets/hearing_test.png",
+    mainImage: "/assets/signs_of_hearing_loss.png",
     category: "Health Tips",
     tags: ["Hearing Loss", "Healthcare", "Diagnosis", "Hearing Health"],
     publishDate: "2024-03-19",
@@ -790,7 +790,7 @@ export const blogs = [
       role: "Senior Audiologist",
       image: "/assets/doctor.jpg"
     },
-    mainImage: "/assets/ear_care.png",
+    mainImage: "/assets/causes_of_itchy_ears.png",
     category: "Health Tips",
     tags: ["Ear Health", "Medical Advice", "Healthcare", "Symptoms"],
     publishDate: "2024-03-20",
@@ -953,7 +953,7 @@ export const blogs = [
       role: "Senior Audiologist",
       image: "/assets/doctor.jpg"
     },
-    mainImage: "/assets/hearing_testing.svg",
+    mainImage: "/assets/types_of_hearing_loss.png",
     category: "Health Education",
     tags: ["Hearing Loss", "Medical Education", "Healthcare", "Audiology"],
     publishDate: "2024-03-21",
@@ -965,7 +965,7 @@ export const blogs = [
     id: 9,
     title: "Top Hearing Aid Brands: A Comprehensive Guide",
     slug: "top-hearing-aid-brands",
-    mainImage: "/assets/blog/hearing-aid-brands.jpg",
+    mainImage: "/assets/top_hearing_aid_brands.png",
     excerpt: "Discover the leading hearing aid brands in India and their innovative features to help you make an informed decision for your hearing needs.",
     content: `
       Several reputable brands offer a range of hearing aids with various features to cater to different needs and preferences. Here are some of the top hearing aid brands in the Indian market:

@@ -8,7 +8,7 @@ const BlogSidebar = ({ categories, mostViewedPosts }) => {
           {categories.map((category) => (
             <button
               key={category}
-              className="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 font-poppins"
+              className="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-poppins bg-gray-50"
             >
               {category}
             </button>

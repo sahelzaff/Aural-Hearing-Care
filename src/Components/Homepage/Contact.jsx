@@ -4,7 +4,7 @@ import { MdOutlineAccessTime } from 'react-icons/md'
 
 const Contact = () => {
   return (
-    <div className='w-full h-full bg-auralyellow py-16'>
+    <div className='w-full h-full bg-auralyellow/80 py-16'>
       <div className='px-16'>
         <div className='flex flex-col items-start'>
           <h1 className='text-5xl font-outfit text-white font-semibold'>Contact</h1>

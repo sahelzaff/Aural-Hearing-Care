@@ -11,15 +11,14 @@ const Carousel = () => {
   useEffect(() => {
     const splide = new Splide('.splide', {
       type: 'fade',
-      heightRatio: 0.5, // Optional, adjust if needed
+      heightRatio: 0.5,
       perPage: 1,
       autoplay: true,
       interval: 4000,
       pagination: false,
       arrows: false,
-      rewind: true, 
-      pauseOnHover: false, // Disable pausing on hover
-
+      rewind: true,
+      pauseOnHover: false,
     });
 
     splide.on('move', () => {
@@ -28,6 +27,13 @@ const Carousel = () => {
 
     splide.mount();
   }, []);
+
+  const handleBookAppointment = () => {
+    const appointmentSection = document.getElementById('appointment-booking');
+    if (appointmentSection) {
+      appointmentSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const slides = [
     {
@@ -73,7 +79,7 @@ const Carousel = () => {
         <div className="carousel-text content pr-96">
           <div className='py-20'>
             <div>
-              <h1 className='text-[45px] text-slate-50 font-semibold py-6 tracking-wider century '>
+              <h1 className='text-[45px] text-slate-50 font-normal py-6 tracking-wider century '>
                 {slides[activeSlide].title}
               </h1>
               <p className='century text-lg text-white pr-12'>
@@ -82,6 +88,7 @@ const Carousel = () => {
               <div className='py-10'>
                 <button 
                   type="button" 
+                  onClick={handleBookAppointment}
                   className='bg-auralblue px-3 py-3 text-xl font-montserrat text-white rounded-lg font-semibold hover:scale-[1.03] transition-all duration-300 ease-in-out'>
                   Book Appointment
                 </button>

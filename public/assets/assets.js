@@ -49,6 +49,20 @@ const assets = {
     about_info: 'assets/about_info.png',
     about: 'assets/about.mp4',
     contact_hero: 'assets/contact_hero.png',
+    appointment_bg: 'assets/appointment_bg.png',
+    appointment_bg_2: 'assets/appointment_bg_2.png',
+    speech_therapy: 'assets/speech_therapy.png',
+    understanding_hearing_loss: 'assets/understanding_hearing_loss.png',
+    understanding_tinnitus: 'assets/understanding_tinnitus.png',
+    signs_of_hearing_loss: 'assets/signs_of_hearing_loss.png',
+    causes_of_itchy_ears: 'assets/causes_of_itchy_ears.png',
+    types_of_hearing_loss: 'assets/types_of_hearing_loss.png',
+    top_hearing_aid_brands: 'assets/top_hearing_aid_brands.png',
+    blog_hero: 'assets/blog_hero.png',
+    logo_short: 'assets/logo_short.png',
+    whatsapp_now: 'assets/whatsapp_now.png',
+    call_now: 'assets/call_now.png',
+    video_consultation: 'assets/video_consultation.png',
   };
   
   export default assets;

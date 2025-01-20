@@ -83,9 +83,8 @@ Navbar Menu items
 }
 
 .century {
-  font-family: century-gothic;
+  font-family: century-gothic, "Century Gothic", CenturyGothic, "Century Gothic Regular", sans-serif;
 }
-
 /* Button Welcome */
 button {
   cursor: pointer;
@@ -452,4 +451,78 @@ button:active {
   font-size: 16px;
   color: #333;
   margin-top: 10px;
+}
+
+/* Add this to your global CSS or component styles */
+.react-tel-input .form-control:focus {
+  border-color: #04adf0 !important;
+  box-shadow: 0 0 0 1px #04adf0 !important;
+}
+
+.react-tel-input .form-control {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
+  background-color: transparent !important;
+}
+
+.react-tel-input .country-list {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 4px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.react-tel-input .country-list .country:hover {
+  background-color: #f3f4f6;
+}
+
+.react-tel-input .country-list .country.highlight {
+  background-color: #04adf0;
+}
+
+/* Date Input Custom Styling */
+.date-input-custom {
+    position: relative;
+    padding-right: 30px; /* Space for calendar icon */
+}
+
+.date-input-custom::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.date-input-custom::-webkit-datetime-edit {
+    padding: 0 4px;
+}
+
+.date-input-custom::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+}
+
+.date-input-custom::-webkit-datetime-edit-text {
+    padding: 0 4px;
+}
+
+.date-input-custom::-webkit-datetime-edit-month-field,
+.date-input-custom::-webkit-datetime-edit-day-field,
+.date-input-custom::-webkit-datetime-edit-year-field {
+    padding: 0 2px;
+}
+
+.date-input-custom::-webkit-inner-spin-button {
+    display: none;
+}
+
+/* Remove the placeholder behavior that was causing issues */
+.date-input-custom::before {
+    content: none;
 }

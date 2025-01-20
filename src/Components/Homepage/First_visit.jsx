@@ -46,27 +46,23 @@ const FirstVisit = () => {
     const sectionRefs = useRef([]);
 
     useEffect(() => {
-        const currentRefs = sectionRefs.current;  // Capture the current ref values
+        const currentRefs = sectionRefs.current;
     
         const options = {
             root: null,
-            rootMargin: '0px',
-            threshold: 0.25,
+            rootMargin: '-20% 0px -20% 0px',
+            threshold: 0.5
         };
     
         const observer = new IntersectionObserver((entries) => {
-            let newIndex = currentIndex;
-    
-            entries.forEach((entry) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const index = currentRefs.indexOf(entry.target);
                     if (index !== -1) {
-                        newIndex = index;
+                        setCurrentIndex(index);
                     }
                 }
             });
-    
-            setCurrentIndex(newIndex);
         }, options);
     
         currentRefs.forEach((section) => {
@@ -82,52 +78,182 @@ const FirstVisit = () => {
                 }
             });
         };
-    }, [currentIndex]);
+    }, []);
     
 
     return (
-        <div className="w-3/4 mx-auto px-4 sm:px-8 py-16 bg-gray-100 rounded-lg shadow-lg">
-            <div className="text-center mb-8">
-                <h1 className="text-auralyellow text-3xl sm:text-5xl font-bold font-outfit">
-                    What to expect during your first Visit
-                </h1>
-                <p className="font-poppins text-base text-gray-500 pt-2">
-                    When you schedule your first appointment, we will conduct a detailed assessment, which includes:
-                </p>
-            </div>
+        <div className="w-full bg-gradient-to-b  py-20">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h1 className="text-auralyellow text-3xl sm:text-5xl font-bold font-outfit mb-4">
+                        What to expect during your first Visit
+                    </h1>
+                    <p className="font-poppins text-base text-gray-600 max-w-2xl mx-auto">
+                        When you schedule your first appointment, we will conduct a detailed assessment, which includes:
+                    </p>
+                </div>
 
-            <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 bg-[#f4f4f4] p-8 rounded-lg shadow-md">
-                <div className="flex flex-col space-y-6 w-full">
-                    {visitDetails.map((detail, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Left Column */}
+                    <div className="flex flex-col space-y-4">
                         <div
-                            key={index}
-                            ref={(el) => sectionRefs.current[index] = el}
-                            className={`flex items-center p-4 rounded-lg transition-all duration-700 ease-in-out ${
-                                index === currentIndex ? 'bg-auralblue text-white' : 'bg-gray-200 text-gray-700'
+                            ref={(el) => sectionRefs.current[0] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                0 === currentIndex 
+                                    ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                             }`}
                         >
                             <img
-                                src={detail.image}
-                                alt={detail.title}
-                                className={`transition-all duration-700 ease-in-out ${
-                                    index === currentIndex ? 'filter-none' : 'grayscale'
+                                src={visitDetails[0].image}
+                                alt={visitDetails[0].title}
+                                className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    0 === currentIndex ? 'filter-none' : 'grayscale'
                                 }`}
-                                style={{ width: '60px', marginRight: '16px' }}
                             />
                             <div>
-                                <h2 className="text-lg font-bold mb-2">{detail.title}</h2>
-                                <p className="text-sm">{detail.description}</p>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[0].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[0].description}</p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </div>
 
-            <div className="pt-10 flex justify-center">
-                <button type="button" className='font-medium flex flex-row gap-2 items-center text-white py-3 px-4 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out text-xl'>
-                    <img src={assets.books} className='w-6' alt="" />
-                    <span className='font-montserrat font-semibold'>Hearing Resource</span>
-                </button>
+                        <div
+                            ref={(el) => sectionRefs.current[2] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                2 === currentIndex 
+                                    ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            <img
+                                src={visitDetails[2].image}
+                                alt={visitDetails[2].title}
+                                className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    2 === currentIndex ? 'filter-none' : 'grayscale'
+                                }`}
+                            />
+                            <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[2].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[2].description}</p>
+                            </div>
+                        </div>
+
+                        <div
+                            ref={(el) => sectionRefs.current[4] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                4 === currentIndex 
+                                    ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            <img
+                                src={visitDetails[4].image}
+                                alt={visitDetails[4].title}
+                                className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    4 === currentIndex ? 'filter-none' : 'grayscale'
+                                }`}
+                            />
+                            <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[4].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[4].description}</p>
+                            </div>
+                        </div>
+
+                        <div
+                            ref={(el) => sectionRefs.current[6] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                6 === currentIndex 
+                                    ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            <img
+                                src={visitDetails[6].image}
+                                alt={visitDetails[6].title}
+                                className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    6 === currentIndex ? 'filter-none' : 'grayscale'
+                                }`}
+                            />
+                            <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[6].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[6].description}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="flex flex-col space-y-4 md:mt-[92px]">
+                        <div
+                            ref={(el) => sectionRefs.current[1] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                1 === currentIndex 
+                                            ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                >
+                                    <img
+                                src={visitDetails[1].image}
+                                alt={visitDetails[1].title}
+                                        className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    1 === currentIndex ? 'filter-none' : 'grayscale'
+                                        }`}
+                                    />
+                                    <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[1].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[1].description}</p>
+                                    </div>
+                                </div>
+
+                        <div
+                            ref={(el) => sectionRefs.current[3] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                3 === currentIndex 
+                                    ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            <img
+                                src={visitDetails[3].image}
+                                alt={visitDetails[3].title}
+                                className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    3 === currentIndex ? 'filter-none' : 'grayscale'
+                                }`}
+                            />
+                            <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[3].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[3].description}</p>
+                            </div>
+                    </div>
+
+                        <div
+                            ref={(el) => sectionRefs.current[5] = el}
+                            className={`flex items-start p-6 rounded-xl transition-all duration-500 ease-in-out h-[180px] ${
+                                5 === currentIndex 
+                                            ? 'bg-auralblue text-white scale-[1.02] shadow-lg' 
+                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                >
+                                    <img
+                                src={visitDetails[5].image}
+                                alt={visitDetails[5].title}
+                                        className={`w-12 h-12 mr-4 transition-all duration-500 ease-in-out ${
+                                    5 === currentIndex ? 'filter-none' : 'grayscale'
+                                        }`}
+                                    />
+                                    <div>
+                                <h2 className="text-lg font-bold mb-2 font-outfit">{visitDetails[5].title}</h2>
+                                <p className="text-sm font-poppins leading-relaxed">{visitDetails[5].description}</p>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+
+                <div className="pt-12 flex justify-center">
+                    <button type="button" className='font-medium flex flex-row gap-2 items-center text-white py-3 px-6 rounded-lg bg-auralyellow hover:scale-105 transition-all duration-300 ease-in-out'>
+                        <img src={assets.books} className='w-6' alt="" />
+                        <span className='font-montserrat font-semibold'>Hearing Resource</span>
+                    </button>
+                </div>
             </div>
         </div>
     );
