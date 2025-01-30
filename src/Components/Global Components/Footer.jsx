@@ -79,7 +79,7 @@ const Footer = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         {/* Company Info */}
                         <div>
-                            <img src={assets.logowhite} alt="Aural Hearing Care" className="h-12 mb-6" />
+                            <img src={assets.logowhite} alt="Aural Hearing Care" className="h-20 mb-6" />
                             <p className="font-poppins text-sm mb-6">
                                 At Aural Hearing Care, we provide personalized hearing solutions using the latest technology, 
                                 offering a wide range of hearing aids from top manufacturers to meet your unique needs.
@@ -90,14 +90,14 @@ const Footer = () => {
                                 <FaWhatsapp className="text-2xl hover:text-auralyellow cursor-pointer transition-colors" />
                                 <FaLinkedin className="text-2xl hover:text-auralyellow cursor-pointer transition-colors" />
                             </div>
-                            <p className="font-poppins text-sm">License Number: XYZ12345</p>
+                            {/* <p className="font-poppins text-sm">License Number: XYZ12345</p> */}
                         </div>
 
                         {/* Quick Links */}
                         <div>
                             <h4 className="font-outfit text-xl font-semibold mb-4">Quick Links</h4>
                             <ul className="space-y-2">
-                                {['Home', 'Products', 'Services', 'About Us', 'Contact', 'My Account', 'My Orders', 'Blogs'].map((link) => (
+                                {['Home', 'Products', 'Services', 'About Us', 'Contact', 'Blogs'].map((link) => (
                                     <li key={link}>
                                         <a href={link === 'Blogs' ? '/blog' : '#'} className="font-poppins text-sm hover:text-auralyellow transition-colors">
                                             {link}
@@ -112,15 +112,15 @@ const Footer = () => {
                             <h4 className="font-outfit text-xl font-semibold mb-4">Contact Us</h4>
                             <div className="space-y-4">
                                 <div className="flex items-start space-x-3">
-                                    <FaPhoneAlt className="mt-1" />
+                                    <FaPhoneAlt className="mt-1 text-lg" />
                                     <p className="font-poppins text-sm">+91 98234 49422</p>
                                 </div>
                                 <div className="flex items-start space-x-3">
-                                    <FaEnvelope className="mt-1" />
+                                    <FaEnvelope className="mt-1 text-lg" />
                                     <p className="font-poppins text-sm">auralhearingcare@gmail.com</p>
                                 </div>
                                 <div className="flex items-start space-x-3">
-                                    <FaMapMarkerAlt className="mt-1" />
+                                    <FaMapMarkerAlt className="mt-1 text-xl flex-shrink-0" />
                                     <p className="font-poppins text-sm">
                                         Shop no: 6, Pushpkunj Complex, beside YES BANK, 
                                         near Hotel Centre Point, Ramdaspeth, 

@@ -112,11 +112,16 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold font-poppins text-gray-800 mb-3">Phone</h3>
-                  <a href="tel:+919823449422" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins">
-                    +91 98234 49422
-                  </a>
+                  <div className="space-y-1">
+                    <a href="tel:07122441100" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins block">
+                      Ph: 0712-2441100
+                    </a>
+                    <a href="tel:+919823449422" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins block">
+                      Mob: +91 98234 49422
+                    </a>
+                  </div>
                 </div>
-              </motion.div>
+                </motion.div>
 
               <motion.div
                 initial={{ y: 50, opacity: 0 }}
@@ -132,7 +137,7 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold font-poppins text-gray-800 mb-3">Working Hours</h3>
-                  <p className="text-lg text-gray-600 font-poppins">Mon - Sat: 10:00 AM - 8:00 PM</p>
+                  <p className="text-lg text-gray-600 font-poppins">Mon - Sat: 10:00 AM - 7:00 PM</p>
                   <p className="text-lg text-gray-600 font-poppins">Sunday: Closed</p>
                 </div>
               </motion.div>
@@ -152,7 +157,7 @@ export default function ContactPage() {
                   </div>
                   <h3 className="text-xl font-semibold font-poppins text-gray-800 mb-3">Email</h3>
                   <a href="mailto:info@auralhearingcare.com" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins">
-                    info@auralhearingcare.com
+                   auralhearingcare@gmail.com
                   </a>
                 </div>
               </motion.div>

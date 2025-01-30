@@ -24,8 +24,8 @@ const Page = () => {
     <First_visit/>
     <Specialized/>
     <Appointment_booking/>
-    <Testimonial/>
-    <Products/>
+    {/* <Testimonial/> */}
+    {/* <Products/> */}
     <Contact/>
     <Footer/> 
     </>

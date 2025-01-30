@@ -16,14 +16,14 @@ const timeSlots = {
         "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM"
     ],
     evening: [
-        "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM"
+        "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM"
     ]
 };
 
 const timePeriods = [
     { id: 'morning', label: 'Morning', time: '9:00 AM - 11:30 AM', icon: '🌅' },
     { id: 'afternoon', label: 'Afternoon', time: '12:00 PM - 3:00 PM', icon: '☀️' },
-    { id: 'evening', label: 'Evening', time: '3:30 PM - 5:30 PM', icon: '🌇' }
+    { id: 'evening', label: 'Evening', time: '3:30 PM - 7:00 PM', icon: '🌇' }
 ];
 
 const AppointmentForm = () => {

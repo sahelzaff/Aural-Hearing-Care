@@ -16,14 +16,14 @@ const timeSlots = {
         "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM"
     ],
     evening: [
-        "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM"
+        "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM"
     ]
 };
 
 const timePeriods = [
     { id: 'morning', label: 'Morning', time: '9:00 AM - 11:30 AM', icon: '🌅' },
     { id: 'afternoon', label: 'Afternoon', time: '12:00 PM - 3:00 PM', icon: '☀️' },
-    { id: 'evening', label: 'Evening', time: '3:30 PM - 5:30 PM', icon: '🌇' }
+    { id: 'evening', label: 'Evening', time: '3:30 PM - 7:00 PM', icon: '🌇' }
 ];
 
 const AppointmentBooking = () => {
@@ -116,14 +116,16 @@ const AppointmentBooking = () => {
 
     const formatDateForInput = (dateStr) => {
         if (!dateStr) return '';
+        // Convert DD-MM-YYYY to YYYY-MM-DD for input
         const [day, month, year] = dateStr.split('-');
-        return `${year}-${month}-${day}`; // Format for input type="date"
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     };
 
     const formatDateForDisplay = (dateStr) => {
         if (!dateStr) return '';
+        // Convert YYYY-MM-DD to DD-MM-YYYY for display/storage
         const [year, month, day] = dateStr.split('-');
-        return `${day}-${month}-${year}`; // Format for display/storage
+        return `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
     };
 
     const handleDateChange = (e) => {
@@ -140,8 +142,8 @@ const AppointmentBooking = () => {
         }
         
         setDateError('');
-        const formattedDate = formatDateForDisplay(inputDate);
-        setFormData(prev => ({ ...prev, date: formattedDate }));
+        // Store the date in ISO format (YYYY-MM-DD)
+        setFormData(prev => ({ ...prev, date: inputDate }));
         
         if (formData.timeSlot) {
             setFormData(prev => ({ ...prev, timeSlot: '' }));
@@ -236,13 +238,11 @@ const AppointmentBooking = () => {
                     [formData.timeSlot]: 'booked'
                 }
             }));
-
-            const formattedDate = formData.date.split('-').reverse().join('-'); // Convert DD-MM-YYYY to YYYY-MM-DD
             
-            // Store booking details for confirmation
+            // Store booking details for confirmation with properly formatted date
             setLastBookingDetails({
                 ...formData,
-                date: formattedDate,
+                date: formData.date, // Already in YYYY-MM-DD format
                 bookingId: Math.random().toString(36).substr(2, 9).toUpperCase()
             });
 
@@ -320,7 +320,7 @@ const AppointmentBooking = () => {
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                         <span className="text-gray-600">Date</span>
                         <span className="font-medium text-gray-800">
-                            {new Date(lastBookingDetails.date.split('-').reverse().join('-')).toLocaleDateString('en-US', {
+                            {new Date(lastBookingDetails.date + 'T00:00:00').toLocaleDateString('en-US', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
