@@ -229,8 +229,44 @@ const AppointmentBooking = () => {
         setIsSubmitting(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-        
+            // Generate a unique booking ID
+            const bookingId = Math.random().toString(36).substr(2, 9).toUpperCase();
+
+            // Structure the data for the email service
+            const emailPayload = {
+                customer: {
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email,
+                    age: formData.age,
+                    gender: formData.gender
+                },
+                booking: {
+                    date: formData.date,
+                    timeSlot: formData.timeSlot,
+                    bookingId: bookingId
+                },
+                recipients: {
+                    customer: true,
+                    owner: true
+                }
+            };
+
+            // Send email confirmation
+            const emailResponse = await fetch('http://localhost:5001/api/v1/email/send-appointment-emails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(emailPayload)
+            });
+
+            if (!emailResponse.ok) {
+                const errorData = await emailResponse.json();
+                throw new Error(errorData.message || 'Failed to send confirmation email');
+            }
+
+            // Update booked time slots
             setBookedTimeSlots((prev) => ({
                 ...prev,
                 [formData.date]: {
@@ -239,11 +275,11 @@ const AppointmentBooking = () => {
                 }
             }));
             
-            // Store booking details for confirmation with properly formatted date
+            // Store booking details for confirmation
             setLastBookingDetails({
                 ...formData,
-                date: formData.date, // Already in YYYY-MM-DD format
-                bookingId: Math.random().toString(36).substr(2, 9).toUpperCase()
+                date: formData.date,
+                bookingId: bookingId
             });
 
             setBookingSuccess(true);
@@ -254,7 +290,8 @@ const AppointmentBooking = () => {
                 icon: '🎉'
             });
         } catch (error) {
-            toast.error('Something went wrong. Please try again.');
+            console.error('Booking error:', error);
+            toast.error(error.message || 'Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
