@@ -253,7 +253,7 @@ const AppointmentBooking = () => {
             };
 
             // Send email confirmation
-            const emailResponse = await fetch('http://localhost:5001/api/v1/email/send-appointment-emails', {
+            const emailResponse = await fetch('https://auralhearingcareemailservice-production.up.railway.app/api/v1/email/send-appointment-emails', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
