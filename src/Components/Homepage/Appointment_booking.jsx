@@ -490,7 +490,7 @@ const AppointmentBooking = () => {
                             </div>
 
                                 {/* Scrollable Content Area */}
-                                <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                             {currentStep === 1 ? (
                                 <motion.div
                                     initial={{ opacity: 0 }}
@@ -739,7 +739,7 @@ const AppointmentBooking = () => {
                             </div>
                         </>
                     ) : (
-                        <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+                        <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
                         <SuccessScreen />
                         </div>
                     )}
