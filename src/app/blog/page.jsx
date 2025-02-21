@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TopbarBelow from '@/Components/Global Components/TopbarBelow';
 import ClientNavbar from '@/Components/Global Components/ClientNavbar';
 import Footer from '@/Components/Global Components/Footer';
@@ -14,6 +14,10 @@ const BlogPage = () => {
   const filteredBlogs = selectedCategory === 'All' 
     ? blogs 
     : blogs.filter(blog => blog.category === selectedCategory);
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   return (
     <>

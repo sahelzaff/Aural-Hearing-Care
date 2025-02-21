@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { IoLocationSharp } from "react-icons/io5";
 
@@ -10,6 +10,10 @@ import ContactForm from '@/Components/Contact/ContactForm';
 import assets from 'public/assets/assets';
 
 export default function ContactPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <TopbarBelow />
