@@ -131,7 +131,7 @@ const Navbar = () => {
                             <li className='font-montserrat text-lg font-medium cursor-pointer relative group'>
                                 <Link href="/About-us">
                                     <span className={`hover-underline-animation ${isActivePath('/About-us') ? 'active-link' : ''}`}>
-                                        About Us111
+                                        About Us
                                     </span>
                                 </Link>
                             </li>
