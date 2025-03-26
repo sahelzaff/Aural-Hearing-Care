@@ -63,6 +63,31 @@ const assets = {
     whatsapp_now: 'assets/whatsapp_now.png',
     call_now: 'assets/call_now.png',
     video_consultation: 'assets/video_consultation.png',
+    interior_clinic: 'assets/interior_clinic.png',
+    hearing_equipments: 'assets/hearing_equipments.png',
+    consultant_patient: 'assets/consultant_patient.png',
+    reception_area: 'assets/reception_area.png',
+    doctor_aboutus: 'assets/doctor_aboutus.png',
+    service_hero: 'assets/service_hero.png',
+    service_hero2: 'assets/service_hero2.png',
+    early_intervention: 'assets/early_intervention.png',
+    counselling: 'assets/counselling.png',
+    ear_mold: 'assets/ear_mold.png',
+    cochlear_implant: 'assets/cochlear_implant.png',
+    tone_audiometry: 'assets/tone_audiometry.png',
+    aid_fitting: 'assets/aid_fitting.png',
+    hearing_accessories: 'assets/hearing_accessories.png',
+    speech_therapy2: 'assets/speech_therapy2.png',
+    tinnitus_management: 'assets/tinnitus_management.png',
+    newborn_screening: 'assets/newborn_screening.png',
+    occupational_hearing: 'assets/occupational_hearing.png',
+    vrt_therapy: 'assets/vrt_therapy.png',
+    aid_recycling: 'assets/aid_recycling.png',
+    pediatric: 'assets/pediatric.png',
+
+    
+  
+    
   };
   
   export default assets;

@@ -16,8 +16,8 @@ export default function ContactPage() {
 
   return (
     <>
-      <TopbarBelow />
-      <ClientNavbar />
+      {/* <TopbarBelow />
+      <ClientNavbar /> */}
       
       {/* Hero Section */}
       <motion.div
@@ -141,8 +141,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold font-poppins text-gray-800 mb-3">Working Hours</h3>
-                  <p className="text-lg text-gray-600 font-poppins">Mon - Sat: 10:00 AM - 7:00 PM</p>
-                  <p className="text-lg text-gray-600 font-poppins">Sunday: Closed</p>
+                  <p className="text-lg text-auralblue font-poppins">Mon - Sat: 10:00 AM - 7:00 PM</p>
+                  <p className="text-lg text-auralblue font-poppins">Sunday: Closed</p>
                 </div>
               </motion.div>
 
@@ -161,6 +161,9 @@ export default function ContactPage() {
                   </div>
                   <h3 className="text-xl font-semibold font-poppins text-gray-800 mb-3">Email</h3>
                   <a href="mailto:info@auralhearingcare.com" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins">
+                   info@auralhearingcare.com
+                  </a>
+                  <a href="mailto:auralhearingcare@gmail.com" className="text-lg text-auralblue hover:text-auralblue/80 transition-colors font-poppins">
                    auralhearingcare@gmail.com
                   </a>
                 </div>
@@ -188,7 +191,7 @@ export default function ContactPage() {
             </div>
       
 
-      <FooterWoForm />
+      {/* <FooterWoForm /> */}
     </>
   );
 } 

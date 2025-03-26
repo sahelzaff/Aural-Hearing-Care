@@ -152,19 +152,24 @@
 }
 
 .validation-icon {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background-color: transparent;
 }
 
 .validation-icon.success {
-  color: #22c55e;
+  color: #10b981;
+  background-color: transparent;
 }
 
 .validation-icon.error {
   color: #ef4444;
+  background-color: transparent;
 }
 
 /* Social login buttons */

@@ -1,0 +1,20 @@
+# Cursor Rules for Aural Hearing Care Project
+
+## UI and Functionality Preservation
+- Do not modify or change existing UI elements, styling, or animations unless explicitly instructed
+- Preserve all existing functionality and behavior unless changes are specifically requested
+- Maintain the current design system, color scheme, and component structure
+- Do not remove decorative elements, animations, or transitions without approval
+- When fixing bugs, make minimal changes necessary to resolve the issue without altering design
+
+## Implementation Guidelines
+- Focus on fixing bugs and implementing requested features without changing existing code unnecessarily
+- Respect the current architecture and patterns used in the codebase
+- When adding new features, match the style and approach of existing code
+- Document any critical changes that might affect other parts of the application
+- Test all changes thoroughly to ensure they don't break existing functionality
+
+## Token and Authentication Handling
+- Standardize on access_token as the primary authentication token
+- Ensure proper SSR compatibility in all authentication-related code
+- Maintain backward compatibility with existing token handling where possible 

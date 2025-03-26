@@ -963,57 +963,109 @@ export const blogs = [
   },
   {
     id: 9,
-    title: "Top Hearing Aid Brands: A Comprehensive Guide",
+    title: "Top Hearing Aid Brands: A Comprehensive Guide", 
     slug: "top-hearing-aid-brands",
     mainImage: "/assets/top_hearing_aid_brands.png",
     excerpt: "Discover the leading hearing aid brands in India and their innovative features to help you make an informed decision for your hearing needs.",
     content: `
-      Several reputable brands offer a range of hearing aids with various features to cater to different needs and preferences. Here are some of the top hearing aid brands in the Indian market:
+      <div class="brands-section bg-white p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6">Top Hearing Aid Brands in India</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          ${[1,2,3,4,5,6,7,8,9].map(i => `
+          <div class="brand-card bg-white p-6 rounded-lg shadow-sm border-l-4 ${i%3 === 0 ? 'border-blue-400' : i%3 === 1 ? 'border-green-400' : 'border-purple-400'}">
+            <h3 class="text-lg font-semibold ${i%3 === 0 ? 'text-blue-700' : i%3 === 1 ? 'text-green-700' : 'text-purple-700'} mb-3">${[
+              'Phonak',
+              'Siemens (Signia)',
+              'Oticon',
+              'Widex',
+              'Resound',
+              'Unitron',
+              'Starkey',
+              'Cochlear Limited',
+              'GN Hearing (ReSound)'
+            ][i-1]}</h3>
+            <p class="text-gray-700 mb-4">${[
+              'Advanced technology with Bluetooth connectivity and rechargeable batteries',
+              'Innovative designs with active noise reduction and wireless features',
+              'High-performance devices focusing on natural sound quality',
+              'Personalized solutions emphasizing clarity and natural sound',
+              'Durable aids with smartphone streaming capabilities',
+              'Adaptive solutions for various listening environments',
+              'AI-powered devices with health monitoring features',
+              'Specialized solutions for severe hearing loss',
+              'User-focused designs with advanced connectivity'
+            ][i-1]}</p>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <span class="text-sm font-semibold text-gray-600">Notable Products:</span>
+              <ul class="mt-2 space-y-1">
+                ${[
+                  'Phonak Marvel, Audeo Paradise, Naida',
+                  'Signia Pure Charge & Go, Styletto X, Xperience',
+                  'Oticon More, Opn S, Xceed',
+                  'Widex Moment, Evoke, Unique',
+                  'Resound ONE, LiNX Quattro, Enzo Q',
+                  'Unitron Moxi Fit, Discover, Shine',
+                  'Starkey Livio AI, Muse iQ, Halo 2',
+                  'Cochlear Nucleus 7, Kanso 2',
+                  'ReSound ONE, LiNX Quattro'
+                ][i-1].split(', ').map(p => `
+                <li class="flex items-start text-gray-700">
+                  <span class="text-sm mr-2">📌</span>
+                  <span class="text-sm">${p}</span>
+                </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+          `).join('')}
+        </div>
+      </div>
 
-      ## 1. Phonak
-      Known for its advanced technology and high-quality sound, Phonak offers a wide range of hearing aids with features such as Bluetooth connectivity and rechargeable batteries.
-      **Notable Products:** Phonak Marvel, Phonak Audeo Paradise, Phonak Naida.
+      <div class="selection-guide bg-blue-50 p-6 rounded-lg mb-8">
+        <h3 class="text-xl font-semibold mb-4">Choosing the Right Hearing Aid</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-gray-700 mb-4">Key considerations when selecting a hearing aid:</p>
+            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+              <li>Degree and type of hearing loss</li>
+              <li>Lifestyle and daily activities</li>
+              <li>Budget and maintenance requirements</li>
+              <li>Comfort and aesthetic preferences</li>
+            </ul>
+          </div>
+          <div class="bg-white p-4 rounded-lg border border-blue-200">
+            <p class="text-blue-700 font-semibold">Professional consultation is essential for optimal results. Our audiologists provide:</p>
+            <ul class="mt-2 space-y-2">
+              <li class="flex items-start">
+                <span class="text-blue-500 mr-2">✅</span>
+                <span>Personalized hearing assessments</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-blue-500 mr-2">✅</span>
+                <span>Brand-neutral recommendations</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-blue-500 mr-2">✅</span>
+                <span>Custom fitting and calibration</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-      ## 2. Siemens (Signia)
-      Siemens, now branded as Signia, provides innovative hearing aids with features like active noise reduction and wireless connectivity. They are known for their reliability and user-friendly designs.
-      **Notable Products:** Signia Pure Charge & Go, Signia Styletto X, Signia Xperience.
-
-      ## 3. Oticon
-      Oticon is recognized for its high-performance hearing aids that focus on providing clear and natural sound quality. They offer models with advanced technology and comfort features.
-      **Notable Products:** Oticon More, Oticon Opn S, Oticon Xceed.
-
-      ## 4. Widex
-      Widex, now part of WS Audiology, is known for its innovative hearing aids that offer excellent sound quality and personalization features. They emphasize clarity and natural sound experiences.
-      **Notable Products:** Widex Moment, Widex Evoke, Widex Unique.
-
-      ## 5. Resound
-      Resound offers hearing aids with advanced technology, including features like remote control and direct streaming from smartphones. They are known for their durability and sound clarity.
-      **Notable Products:** Resound ONE, Resound LiNX Quattro, Resound Enzo Q.
-
-      ## 6. Unitron
-      Unitron offers a variety of hearing aids with features like speech enhancement and wireless connectivity. They focus on providing solutions that adapt to various listening environments.
-      **Notable Products:** Unitron Moxi Fit, Unitron Discover, Unitron Shine.
-
-      ## 7. Starkey
-      Starkey is known for its innovative hearing aids with features like artificial intelligence and health monitoring capabilities. They focus on providing personalized hearing solutions.
-      **Notable Products:** Starkey Livio AI, Starkey Muse iQ, Starkey Halo 2.
-
-      ## 8. Cochlear Limited
-      While primarily known for cochlear implants, Cochlear Limited also offers solutions for individuals with severe hearing loss. Their products are designed to provide enhanced hearing experiences.
-      **Notable Products:** Cochlear Nucleus 7, Cochlear Kanso 2.
-
-      ## 9. GN Hearing (ReSound)
-      GN Hearing, which includes the ReSound brand, offers a range of hearing aids with advanced technology and connectivity features. They are known for their innovation and user-focused designs.
-      **Notable Products:** ReSound ONE, ReSound LiNX Quattro.
-
-      When choosing a hearing aid, it's important to consider factors such as your hearing loss level, lifestyle, and budget. Consulting with us can help you find the best hearing aid that suits your specific needs and preferences.
-
-      We provide all the brand to our customer with custom and tailored as per their requirement and make it most suitable.
+      <div class="provider-note bg-green-50 p-4 rounded-lg border border-green-200">
+        <p class="text-green-700 font-semibold">We offer all major brands with customized solutions tailored to individual needs, ensuring optimal hearing outcomes for every patient.</p>
+      </div>
     `,
-    author: "Dr. Sarah Miller",
+    author: {
+      name: "Dr. Rahul Pandey",
+      role: "Senior Audiologist", 
+      image: "/assets/doctor.jpg"
+    },
     category: "Hearing Health",
     tags: ["Hearing Aids", "Healthcare Technology", "Medical Devices", "Audiology"],
-    publishDate: "2024-03-22",
+    publishDate: "2025-03-07",
     readTime: "8 min read",
     views: 0,
     relatedPosts: [2, 4, 6, 8]

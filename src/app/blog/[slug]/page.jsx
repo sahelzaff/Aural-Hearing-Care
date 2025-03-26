@@ -7,6 +7,7 @@ import ClientNavbar from '@/Components/Global Components/ClientNavbar';
 import Footer from '@/Components/Global Components/Footer';
 import BlogSidebar from '@/Components/Blog/BlogSidebar';
 import { getBlogBySlug, getRelatedBlogs, getMostViewedBlogs, categories } from '@/data/blogs';
+import Link from 'next/link';
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -17,16 +18,31 @@ const BlogPost = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
   if (!blog) return null;
 
   return (
     <>
-      <TopbarBelow />
-      <ClientNavbar />
+      {/* <TopbarBelow />
+      <ClientNavbar /> */}
       
-      <div className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="bg-gray-50 ">
+        <div className="max-w-7xl mx-auto ">
+           {/* Breadcrumbs */}
+           <nav className="bg-white border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                  <div className="flex items-center space-x-2 text-sm font-poppins">
+                    <Link href="/" className="text-gray-600 hover:text-auralblue transition-colors">Home</Link>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <Link href="/blog" className="text-gray-600 hover:text-auralblue transition-colors">Blog</Link>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-auralblue font-medium max-w-[200px] whitespace-nowrap">{blog.title}</span>
+                  </div>
+                </div>
+              </nav>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <motion.div
@@ -34,6 +50,7 @@ const BlogPost = () => {
               animate={{ opacity: 1, y: 0 }}
               className="lg:col-span-2"
             >
+             
               <div className="bg-white rounded-xl overflow-hidden shadow-sm">
                 {/* Author Info */}
                 <div className="p-6 border-b">
@@ -117,7 +134,7 @@ const BlogPost = () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

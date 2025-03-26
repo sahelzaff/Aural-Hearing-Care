@@ -21,8 +21,8 @@ const BlogPage = () => {
 
   return (
     <>
-      <TopbarBelow />
-      <ClientNavbar />
+      {/* <TopbarBelow /> 
+      <ClientNavbar /> */}
 
       {/* Hero Section */}
       <motion.div
@@ -100,7 +100,7 @@ const BlogPage = () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

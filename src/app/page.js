@@ -1,6 +1,3 @@
-import Footer from '@/Components/Global Components/Footer'
-import ClientNavbar from '@/Components/Global Components/ClientNavbar'
-import TopbarBelow from '@/Components/Global Components/TopbarBelow'
 import Appointment_booking from '@/Components/Homepage/Appointment_booking'
 import BrandLogoSlider from '@/Components/Homepage/Brand_logo_slider'
 import Contact from '@/Components/Homepage/Contact'
@@ -16,8 +13,6 @@ import React from 'react'
 const Page = () => {
   return (
     <>
-    <TopbarBelow/>
-    <ClientNavbar/>
     <Slider/>
     <Welcome className='mt-20'/>
     <BrandLogoSlider/>
@@ -27,7 +22,6 @@ const Page = () => {
     {/* <Testimonial/> */}
     {/* <Products/> */}
     <Contact/>
-    <Footer/> 
     </>
   )
 }

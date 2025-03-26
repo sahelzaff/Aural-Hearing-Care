@@ -1,159 +1,117 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast, { Toaster } from 'react-hot-toast';
-import { FaRegCalendarAlt, FaRegClock, FaRegUser, FaPhoneAlt, FaRegEnvelope, FaCheck } from 'react-icons/fa';
+import toast from 'react-hot-toast';
+import { FaRegCalendarAlt, FaRegClock, FaRegUser, FaPhoneAlt, FaRegEnvelope, FaCheck, FaMapMarkerAlt, FaStickyNote } from 'react-icons/fa';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import assets from '../../../public/assets/assets';
 import '../../Components/Components.css';
-
-const timeSlots = {
-    morning: [
-        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM"
-    ],
-    afternoon: [
-        "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM"
-    ],
-    evening: [
-        "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM"
-    ]
-};
-
-const timePeriods = [
-    { id: 'morning', label: 'Morning', time: '9:00 AM - 11:30 AM', icon: '🌅' },
-    { id: 'afternoon', label: 'Afternoon', time: '12:00 PM - 3:00 PM', icon: '☀️' },
-    { id: 'evening', label: 'Evening', time: '3:30 PM - 7:00 PM', icon: '🌇' }
-];
+import useAppointment from '@/hooks/useAppointment';
 
 const AppointmentBooking = () => {
     const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
+        first_name: '',
+        last_name: '',
+        phone_number: '',
         email: '',
-        date: '',
-        timeSlot: '',
-        selectedPeriod: '',
+        date_of_birth: '',
         gender: '',
-        age: ''
+        address: '',
+        appointment_date: '',
+        time_slot_id: '',
+        sub_slot_id: '',
+        selected_time: '',
+        notes: ''
     });
-    const [bookedTimeSlots, setBookedTimeSlots] = useState({});
     const [errorMessages, setErrorMessages] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [bookingSuccess, setBookingSuccess] = useState(false);
     const [lastBookingDetails, setLastBookingDetails] = useState(null);
     const [dateError, setDateError] = useState('');
+    const [dateAvailability, setDateAvailability] = useState(null);
+    
+    // Use our custom appointment hook
+    const { 
+        timeSlots, 
+        loading, 
+        error,
+        fetchTimeSlots,
+        getTimeSlotById,
+        getAvailabilityForDate,
+        bookAppointment,
+        formatTime
+    } = useAppointment();
 
     useEffect(() => {
-        const storedBookedSlots = JSON.parse(localStorage.getItem('bookedTimeSlots')) || {};
-        setBookedTimeSlots(storedBookedSlots);
+        // Fetch time slots when component mounts
+        fetchTimeSlots();
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem('bookedTimeSlots', JSON.stringify(bookedTimeSlots));
-    }, [bookedTimeSlots]);
-
     const isTimeSlotDisabled = (timeSlot) => {
-        if (!formData.date) return true;
+        if (!dateAvailability) return true;
         
-        const today = new Date();
-        const selectedDate = new Date(formData.date.split('-').reverse().join('-'));
+        // Check if the time slot exists and has any available sub-slots
+        const slot = dateAvailability.timeSlots.find(slot => slot.id === timeSlot.id);
+        if (!slot) return true;
         
-        // If selected date is today, check time
-        if (selectedDate.toDateString() === today.toDateString()) {
-            const currentHour = today.getHours();
-            const currentMinutes = today.getMinutes();
+        // A time slot is disabled if none of its sub-slots are available
+        return !slot.subSlots.some(subSlot => subSlot.is_available);
+    };
+
+    const isSubSlotDisabled = (subSlot) => {
+        return !subSlot.is_available;
+    };
+
+    const handleDateChange = async (e) => {
+        const { name, value } = e.target; // Get input name and value
+        const inputDate = value; // YYYY-MM-DD format from input
+        
+        if (name === 'appointment_date') {
+            const selectedDate = new Date(inputDate);
+            const today = new Date();
             
-            const [slotTime, period] = timeSlot.split(' ');
-            const [slotHour, slotMinute] = slotTime.split(':').map(num => parseInt(num));
-            let compareHour = slotHour;
+            today.setHours(0, 0, 0, 0);
             
-            if (period === 'PM' && slotHour !== 12) {
-                compareHour = slotHour + 12;
-            } else if (period === 'AM' && slotHour === 12) {
-                compareHour = 0;
+            if (selectedDate < today) {
+                setDateError('Please select a future date');
+                setFormData(prev => ({ ...prev, appointment_date: '' }));
+                setDateAvailability(null);
+                return;
             }
-
-            // Check if this time slot is in the past
-            if (compareHour < currentHour || (compareHour === currentHour && slotMinute <= currentMinutes)) {
-                return true;
-            }
-        }
-
-        return bookedTimeSlots[formData.date]?.[timeSlot] || false;
-    };
-
-    const isTimePeriodDisabled = (periodId) => {
-        if (!formData.date) return false;
-        
-        const today = new Date();
-        const selectedDate = new Date(formData.date.split('-').reverse().join('-'));
-        
-        // Only check for current day
-        if (selectedDate.toDateString() === today.toDateString()) {
-            const currentHour = today.getHours();
-            const currentMinutes = today.getMinutes();
             
-            // Check each period's end time
-            switch (periodId) {
-                case 'morning':
-                    // Morning ends at 11:30 AM
-                    return (currentHour > 11 || (currentHour === 11 && currentMinutes > 30));
-                case 'afternoon':
-                    // Afternoon ends at 3:00 PM
-                    return currentHour >= 15;
-                case 'evening':
-                    // Evening ends at 5:30 PM
-                    return (currentHour > 17 || (currentHour === 17 && currentMinutes > 30));
-                default:
-                    return false;
+            setDateError('');
+            setFormData(prev => ({ 
+                ...prev, 
+                appointment_date: inputDate,
+                time_slot_id: '',
+                sub_slot_id: '',
+                selected_time: ''
+            }));
+            
+            // Fetch availability for the selected date
+            try {
+                const availability = await getAvailabilityForDate(inputDate);
+                setDateAvailability(availability);
+            } catch (error) {
+                console.error('Error fetching date availability:', error);
+                toast.error('Failed to check availability for selected date');
             }
-        }
-        
-        return false;
-    };
-
-    const formatDateForInput = (dateStr) => {
-        if (!dateStr) return '';
-        // Convert DD-MM-YYYY to YYYY-MM-DD for input
-        const [day, month, year] = dateStr.split('-');
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    };
-
-    const formatDateForDisplay = (dateStr) => {
-        if (!dateStr) return '';
-        // Convert YYYY-MM-DD to DD-MM-YYYY for display/storage
-        const [year, month, day] = dateStr.split('-');
-        return `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
-    };
-
-    const handleDateChange = (e) => {
-        const inputDate = e.target.value; // YYYY-MM-DD format from input
-        const selectedDate = new Date(inputDate);
-        const today = new Date();
-        
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-            setDateError('Please select a future date');
-            setFormData(prev => ({ ...prev, date: '' }));
-            return;
-        }
-        
-        setDateError('');
-        // Store the date in ISO format (YYYY-MM-DD)
-        setFormData(prev => ({ ...prev, date: inputDate }));
-        
-        if (formData.timeSlot) {
-            setFormData(prev => ({ ...prev, timeSlot: '' }));
+        } else {
+            // For date of birth or any other date field
+            setFormData(prev => ({ ...prev, [name]: value }));
+            
+            if (errorMessages[name]) {
+                setErrorMessages(prev => ({ ...prev, [name]: '' }));
+            }
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         
-        if (name === 'date') {
+        if (name === 'date_of_birth' || name === 'appointment_date') {
             handleDateChange(e);
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
@@ -165,24 +123,29 @@ const AppointmentBooking = () => {
     };
 
     const handlePhoneChange = (value, country) => {
-        setFormData(prev => ({ ...prev, phone: value }));
-        if (errorMessages.phone) {
-            setErrorMessages(prev => ({ ...prev, phone: '' }));
+        setFormData(prev => ({ ...prev, phone_number: value }));
+        if (errorMessages.phone_number) {
+            setErrorMessages(prev => ({ ...prev, phone_number: '' }));
         }
     };
 
     const validateStep = (step) => {
         const errors = {};
         if (step === 1) {
-            if (!formData.name) errors.name = 'Full Name is required';
-            if (!formData.phone) errors.phone = 'Phone Number is required';
+            if (!formData.first_name) errors.first_name = 'First name is required';
+            if (!formData.last_name) errors.last_name = 'Last name is required';
+            if (!formData.phone_number) errors.phone_number = 'Phone number is required';
             if (!formData.email) errors.email = 'Email is required';
-            if (!formData.age) errors.age = 'Age is required';
+            if (!formData.date_of_birth) errors.date_of_birth = 'Date of birth is required';
             if (!formData.gender) errors.gender = 'Gender is required';
+            // Making address optional
+            // if (!formData.address) errors.address = 'Address is required';
         } else if (step === 2) {
-            if (!formData.date) errors.date = 'Date is required';
-            if (!formData.timeSlot) errors.timeSlot = 'Time Slot is required';
-            if (bookedTimeSlots[formData.date]?.[formData.timeSlot]) errors.timeSlot = 'Selected time slot is already booked';
+            if (!formData.appointment_date) errors.appointment_date = 'Date is required';
+            if (!formData.time_slot_id) errors.time_slot_id = 'Time slot is required';
+            if (!formData.sub_slot_id) errors.sub_slot_id = 'Specific time is required';
+        } else if (step === 3) {
+            // Notes are optional, no validation needed
         }
         return errors;
     };
@@ -190,36 +153,62 @@ const AppointmentBooking = () => {
     const handleNextStep = () => {
         const errors = validateStep(currentStep);
         if (Object.keys(errors).length === 0) {
-            setCurrentStep(2);
+            setCurrentStep(prev => prev + 1);
         } else {
             setErrorMessages(errors);
         }
     };
 
+    const handlePrevStep = () => {
+        setCurrentStep(prev => prev - 1);
+    };
+
     const resetForm = () => {
         setFormData({
-            name: '',
-            phone: '',
+            first_name: '',
+            last_name: '',
+            phone_number: '',
             email: '',
-            date: '',
-            timeSlot: '',
-            selectedPeriod: '',
+            date_of_birth: '',
             gender: '',
-            age: ''
+            address: '',
+            appointment_date: '',
+            time_slot_id: '',
+            sub_slot_id: '',
+            selected_time: '',
+            notes: ''
         });
         setCurrentStep(1);
         setErrorMessages({});
         setBookingSuccess(false);
         setLastBookingDetails(null);
+        setDateAvailability(null);
     };
 
     const handleBookAnother = () => {
         resetForm();
     };
 
+    const handleTimeSlotSelect = (slotId) => {
+        setFormData(prev => ({ 
+            ...prev, 
+            time_slot_id: slotId,
+            sub_slot_id: '',
+            selected_time: ''
+        }));
+    };
+
+    const handleSubSlotSelect = (subSlot) => {
+        setFormData(prev => ({ 
+            ...prev, 
+            sub_slot_id: subSlot.id,
+            selected_time: subSlot.display_name
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const errors = validateStep(2);
+        const errors = validateStep(3);
 
         if (Object.keys(errors).length > 0) {
             setErrorMessages(errors);
@@ -229,66 +218,39 @@ const AppointmentBooking = () => {
         setIsSubmitting(true);
 
         try {
-            // Generate a unique booking ID
-            const bookingId = Math.random().toString(36).substr(2, 9).toUpperCase();
+            // Call API to book appointment with formData
+            const result = await bookAppointment(formData);
+            console.log("API response:", result);
 
-            // Structure the data for the email service
-            const emailPayload = {
-                customer: {
-                    name: formData.name,
-                    phone: formData.phone,
-                    email: formData.email,
-                    age: formData.age,
-                    gender: formData.gender
-                },
-                booking: {
-                    date: formData.date,
-                    timeSlot: formData.timeSlot,
-                    bookingId: bookingId
-                },
-                recipients: {
-                    customer: true,
-                    owner: true
-                }
-            };
+            if (result.success) {
+                // Extract booking_id based on the API response structure
+                // First check if it's in data.appointment.appointment.booking_id (nested structure)
+                // Then fall back to data.appointment.booking_id if the first path doesn't exist
+                const bookingId = 
+                    (result.data?.appointment?.appointment?.booking_id) || 
+                    (result.data?.appointment?.booking_id) || 
+                    'N/A';
+                
+                console.log("Extracted booking ID:", bookingId);
+                
+                // Store booking details for confirmation with correct booking ID
+                setLastBookingDetails({
+                    ...formData,
+                    bookingId: bookingId,
+                    time_slot: result.data?.appointment?.time_slot || result.data?.appointment?.appointment?.time_slot || {},
+                    sub_slot: result.data?.appointment?.sub_slot || result.data?.appointment?.appointment?.sub_slot || {}
+                });
 
-            // Send email confirmation
-            const emailResponse = await fetch('https://auralhearingcareemailservice-production.up.railway.app/api/v1/email/send-appointment-emails', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(emailPayload)
-            });
+                setBookingSuccess(true);
 
-            if (!emailResponse.ok) {
-                const errorData = await emailResponse.json();
-                throw new Error(errorData.message || 'Failed to send confirmation email');
+                toast.success('Appointment Booked Successfully!', {
+                    duration: 4000,
+                    position: 'top-center',
+                    icon: '🎉'
+                });
+            } else {
+                toast.error(result.message || 'Failed to book appointment');
             }
-
-            // Update booked time slots
-            setBookedTimeSlots((prev) => ({
-                ...prev,
-                [formData.date]: {
-                    ...prev[formData.date],
-                    [formData.timeSlot]: 'booked'
-                }
-            }));
-            
-            // Store booking details for confirmation
-            setLastBookingDetails({
-                ...formData,
-                date: formData.date,
-                bookingId: bookingId
-            });
-
-            setBookingSuccess(true);
-
-            toast.success('Appointment Booked Successfully!', {
-                duration: 4000,
-                position: 'top-center',
-                icon: '🎉'
-            });
         } catch (error) {
             console.error('Booking error:', error);
             toast.error(error.message || 'Something went wrong. Please try again.');
@@ -302,115 +264,550 @@ const AppointmentBooking = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center py-6"
+            className="text-center h-full flex flex-col justify-between py-3"
         >
-            <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ 
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 20 
-                }}
-                className="relative w-24 h-24 mx-auto mb-6"
-            >
-                <div className="absolute inset-0 bg-green-100 rounded-full animate-pulse" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 0.8, ease: "easeInOut" }}
-                    >
+            <div>
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20 
+                    }}
+                    className="relative w-24 h-24 mx-auto mb-4"
+                >
+                    <motion.div 
+                        initial={{ scale: 0.8, opacity: 0.5 }}
+                        animate={{ 
+                            scale: [0.8, 1.1, 0.9, 1],
+                            opacity: [0.5, 0.8, 0.6, 1]
+                        }}
+                        transition={{ 
+                            duration: 2, 
+                            repeat: Infinity, 
+                            repeatType: "reverse" 
+                        }}
+                        className="absolute inset-0 bg-green-100 rounded-full"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
                         <FaCheck className="text-green-500 text-4xl" />
-                    </motion.div>
-                </div>
-            </motion.div>
+                    </div>
+                </motion.div>
+
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="mb-4"
+                >
+                    <h2 className="text-2xl font-bold text-gray-800 mb-1 font-outfit">Booking Confirmed!</h2>
+                    <p className="text-gray-600 font-poppins text-sm">Your appointment has been successfully scheduled.</p>
+                </motion.div>
+            </div>
 
             <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
+                className="bg-white rounded-lg p-4 mb-4 mx-auto shadow-md border border-gray-200 w-full"
             >
-                <h2 className="text-3xl font-bold text-gray-800 mb-2 font-outfit">Booking Confirmed!</h2>
-                <p className="text-gray-600 mb-6 font-poppins">Your appointment has been successfully scheduled.</p>
-            </motion.div>
-
-            <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="bg-gray-50 rounded-xl p-6 mb-6 max-w-md mx-auto shadow-sm"
-            >
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 font-outfit flex items-center justify-center">
-                    <FaRegCalendarAlt className="mr-2 text-auralblue" />
-                    Appointment Details
-                </h3>
-                <div className="space-y-3 text-left">
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-gray-600">Booking ID</span>
-                        <span className="font-medium text-gray-800">{lastBookingDetails.bookingId}</span>
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2 flex items-center justify-between bg-blue-50 p-3 rounded-lg mb-2">
+                        <span className="text-gray-700 font-medium">Booking ID</span>
+                        <span className="font-bold text-[#00a0dc] text-base font-mono tracking-wider">{lastBookingDetails.bookingId}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-gray-600">Name</span>
-                        <span className="font-medium text-gray-800">{lastBookingDetails.name}</span>
+                    
+                    <div className="flex flex-col bg-gray-50 p-3 rounded-lg">
+                        <span className="text-gray-500 text-xs">Name</span>
+                        <span className="font-medium text-gray-800 text-sm truncate">{`${lastBookingDetails.first_name} ${lastBookingDetails.last_name}`}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-gray-600">Date</span>
-                        <span className="font-medium text-gray-800">
-                            {new Date(lastBookingDetails.date + 'T00:00:00').toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
+                    
+                    <div className="flex flex-col bg-gray-50 p-3 rounded-lg">
+                        <span className="text-gray-500 text-xs">Date</span>
+                        <span className="font-medium text-gray-800 text-sm">
+                            {new Date(lastBookingDetails.appointment_date + 'T00:00:00').toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                month: 'short',
                                 day: 'numeric'
                             })}
                         </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-gray-600">Time</span>
-                        <span className="font-medium text-gray-800">{lastBookingDetails.timeSlot}</span>
+                    
+                    <div className="flex flex-col bg-gray-50 p-3 rounded-lg">
+                        <span className="text-gray-500 text-xs">Time</span>
+                        <span className="font-medium text-gray-800 text-sm">{lastBookingDetails.selected_time}</span>
                     </div>
-                </div>
-            </motion.div>
-
-            <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.7 }}
-                className="space-y-4 mb-6"
-            >
-                <div className="bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-700 font-poppins">
-                        <span className="block font-medium mb-1">📧 Email Confirmation</span>
-                        A detailed confirmation has been sent to {lastBookingDetails.email}
-                    </p>
-                </div>
-                <div className="bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm text-gray-700 font-poppins">
-                        <span className="block font-medium mb-1">📱 SMS Reminder</span>
-                        We'll send a reminder to {lastBookingDetails.phone} 24 hours before your appointment
-                    </p>
+                    
+                    <div className="flex flex-col bg-gray-50 p-3 rounded-lg">
+                        <div className="flex items-center">
+                            <FaRegEnvelope className="text-[#00a0dc] mr-2" />
+                            <span className="font-medium text-sm">Email Sent</span>
+                        </div>
+                        <span className="text-gray-500 text-xs truncate mt-1">
+                            Confirmation sent to {lastBookingDetails.email}
+                        </span>
+                    </div>
+                    
+                    {lastBookingDetails.notes && (
+                        <div className="col-span-2 flex flex-col bg-gray-50 p-3 rounded-lg">
+                            <span className="text-gray-500 text-xs">Notes</span>
+                            <span className="font-medium text-gray-800 text-sm mt-1">"{lastBookingDetails.notes}"</span>
+                        </div>
+                    )}
                 </div>
             </motion.div>
 
             <motion.button
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.9 }}
-                whileHover={{ scale: 1.02 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.03, boxShadow: "0 10px 15px -5px rgba(0, 160, 220, 0.3)" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleBookAnother}
-                className="bg-auralblue text-white px-8 py-3 rounded-xl font-medium hover:bg-opacity-90 transition-all duration-300 shadow-sm mx-auto"
+                className="bg-[#00a0dc] hover:bg-[#0092c9] text-white px-6 py-3 rounded-lg font-medium text-base shadow"
             >
                 Book Another Appointment
             </motion.button>
         </motion.div>
     );
 
-    const inputClasses = "w-full px-5 py-4 rounded-xl outline-none border-2 border-gray-200 focus:border-auralblue transition-all duration-300 font-poppins text-gray-700";
-    const labelClasses = "flex items-center gap-2 text-gray-600 font-poppins mb-2";
+    // Update these classes to match the new color scheme
+    const inputClasses = "w-full px-4 py-3 rounded-lg outline-none border border-gray-200 focus:border-[#00a0dc] transition-all duration-300 font-poppins text-gray-700";
+    const labelClasses = "flex items-center gap-2 text-gray-600 font-poppins mb-1 text-sm";
+
+    const renderStepContent = () => {
+        switch(currentStep) {
+            case 1:
+                return (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="space-y-3"
+                    >
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    First Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    value={formData.first_name}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
+                                    placeholder="Enter first name"
+                                />
+                                {errorMessages.first_name && (
+                                    <p className="text-red-500 text-xs mt-1">{errorMessages.first_name}</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Last Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    value={formData.last_name}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
+                                    placeholder="Enter last name"
+                                />
+                                {errorMessages.last_name && (
+                                    <p className="text-red-500 text-xs mt-1">{errorMessages.last_name}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Date of Birth
+                                </label>
+                                <input
+                                    type="date"
+                                    name="date_of_birth"
+                                    value={formData.date_of_birth}
+                                    onChange={handleInputChange}
+                                    max={new Date().toISOString().split('T')[0]} // Set max to today
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm ${
+                                        errorMessages.date_of_birth ? 'border-red-500' : 'border-gray-200'
+                                    }`}
+                                />
+                                {errorMessages.date_of_birth && (
+                                    <p className="text-red-500 text-xs mt-1">{errorMessages.date_of_birth}</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Gender
+                                </label>
+                                <select
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm bg-white"
+                                >
+                                    <option value="">Select gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                {errorMessages.gender && (
+                                    <p className="text-red-500 text-xs mt-1">{errorMessages.gender}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Phone Number
+                            </label>
+                            <PhoneInput
+                                country={'in'}
+                                value={formData.phone_number}
+                                onChange={handlePhoneChange}
+                                containerClass="w-full"
+                                inputStyle={{ 
+                                    width: '100%',
+                                    height: '38px',
+                                    fontSize: '14px',
+                                    padding: '8px 12px 8px 48px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e5e7eb',
+                                    backgroundColor: 'white'
+                                }}
+                                buttonStyle={{
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: '8px 0 0 8px',
+                                    backgroundColor: 'white'
+                                }}
+                            />
+                            {errorMessages.phone_number && (
+                                <p className="text-red-500 text-xs mt-1">{errorMessages.phone_number}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
+                                placeholder="Enter your email"
+                            />
+                            {errorMessages.email && (
+                                <p className="text-red-500 text-xs mt-1">{errorMessages.email}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Address <span className='text-[9px] ml-[2px] text-gray-400'>(Optional)</span>
+                            </label>
+                            <textarea
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
+                                placeholder="Enter your address"
+                                rows="2"
+                            />
+                            {errorMessages.address && (
+                                <p className="text-red-500 text-xs mt-1">{errorMessages.address}</p>
+                            )}
+                        </div>
+                    </motion.div>
+                );
+                
+            case 2:
+                return (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="space-y-3"
+                    >
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Appointment Date
+                            </label>
+                            <input
+                                type="date"
+                                name="appointment_date"
+                                value={formData.appointment_date}
+                                onChange={handleInputChange}
+                                min={new Date().toISOString().split('T')[0]} // Set min to today
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm ${
+                                    dateError ? 'border-red-500' : 'border-gray-200'
+                                }`}
+                            />
+                            {dateError && (
+                                <p className="text-red-500 text-xs mt-1">{dateError}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className={labelClasses}>
+                                <FaRegClock className="text-[#00a0dc]" />
+                                Select Time Slot
+                            </label>
+                            {!formData.appointment_date && (
+                                <motion.p 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className='text-amber-500 text-xs mb-2'
+                                >
+                                    Please select a date first to view available time slots
+                                </motion.p>
+                            )}
+                            
+                            {formData.appointment_date && !dateAvailability && loading && (
+                                <div className="flex justify-center py-4">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00a0dc]"></div>
+                                </div>
+                            )}
+                            
+                            {formData.appointment_date && error && (
+                                <div className="text-red-500 text-sm">{error}</div>
+                            )}
+                            
+                            {dateAvailability && !formData.time_slot_id && (
+                                <div className='grid grid-cols-1 gap-2 mt-2'>
+                                    <p className='text-xs text-gray-600 mb-1'>Select a time slot to begin:</p>
+                                    {dateAvailability.timeSlots.map((slot) => {
+                                        const isDisabled = isTimeSlotDisabled(slot);
+                                        const availableCount = slot.subSlots.filter(subSlot => subSlot.is_available).length;
+                                        
+                                        return (
+                                            <motion.button
+                                                key={slot.id}
+                                                type="button"
+                                                onClick={() => !isDisabled && handleTimeSlotSelect(slot.id)}
+                                                className={`group relative overflow-hidden flex items-center justify-between p-2 rounded-lg border transition-all duration-300 ${
+                                                    isDisabled 
+                                                        ? 'border-gray-200 bg-gray-100 cursor-not-allowed' 
+                                                        : formData.time_slot_id === slot.id
+                                                            ? 'border-[#00a0dc] bg-gradient-to-r from-blue-50 to-indigo-50'
+                                                            : 'border-gray-200 hover:border-[#00a0dc] bg-white hover:bg-blue-50'
+                                                }`}
+                                                whileHover={!isDisabled && { 
+                                                    scale: 1.02,
+                                                    transition: { duration: 0.2 } 
+                                                }}
+                                                whileTap={!isDisabled && { scale: 0.98 }}
+                                                disabled={isDisabled}
+                                            >
+                                                <div className="flex items-center">
+                                                    <span className={`flex items-center justify-center w-7 h-7 rounded-full mr-2 ${
+                                                        isDisabled 
+                                                            ? 'bg-gray-200 text-gray-400' 
+                                                            : 'bg-[#00a0dc] bg-opacity-10 text-[#00a0dc]'
+                                                    }`}>
+                                                        <FaRegClock className="text-xs" />
+                                                    </span>
+                                                    <div className="flex flex-col items-start">
+                                                        <span className={`font-medium text-sm ${isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>
+                                                            {slot.slot_name.charAt(0).toUpperCase() + slot.slot_name.slice(1)}
+                                                        </span>
+                                                        <span className={`text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                            {slot.start_time.substring(0, 5)} - {slot.end_time.substring(0, 5)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                {isDisabled ? (
+                                                    <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-500">Not Available</span>
+                                                ) : (
+                                                    <div className="flex items-center">
+                                                        <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-600 mr-1">
+                                                            {availableCount} {availableCount === 1 ? 'Slot' : 'Slots'}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                
+                                                {!isDisabled && (
+                                                    <motion.div 
+                                                        className="absolute inset-0 bg-gradient-to-r from-blue-200 to-indigo-200 opacity-0 group-hover:opacity-10"
+                                                        initial={{ x: "-100%" }}
+                                                        whileHover={{ x: "100%" }}
+                                                        transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
+                                                    />
+                                                )}
+                                            </motion.button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {dateAvailability && formData.time_slot_id && (
+                                <div className='space-y-2 mt-3 pt-2 border-t border-gray-100'>
+                                    <div className='flex items-center justify-between'>
+                                        <h3 className='text-sm font-medium text-gray-700 flex items-center'>
+                                            <FaRegClock className="text-[#00a0dc] mr-2 text-xs" />
+                                            Available Times
+                                        </h3>
+                                        <motion.button 
+                                            onClick={() => setFormData(prev => ({ ...prev, time_slot_id: '', sub_slot_id: '', selected_time: '' }))}
+                                            className='text-xs text-[#00a0dc] hover:underline flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full'
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6 0L7.06 1.06L2.87 5.25H12V6.75H2.87L7.06 10.94L6 12L0 6L6 0Z" fill="currentColor"/>
+                                            </svg>
+                                            Change
+                                        </motion.button>
+                                    </div>
+                                    
+                                    <div className='grid grid-cols-3 gap-1'>
+                                        {dateAvailability.timeSlots
+                                            .find(slot => slot.id === formData.time_slot_id)?.subSlots
+                                            .filter(subSlot => subSlot.is_available)
+                                            .map((subSlot) => (
+                                                <motion.button
+                                                    key={subSlot.id}
+                                                    type="button"
+                                                    onClick={() => handleSubSlotSelect(subSlot)}
+                                                    className={`relative overflow-hidden p-2 rounded-lg text-xs transition-all duration-300 font-poppins
+                                                        ${formData.sub_slot_id === subSlot.id
+                                                            ? 'bg-gradient-to-r from-[#00a0dc] to-[#0092c9] text-white shadow-md' 
+                                                            : 'bg-white text-gray-700 border border-gray-200 hover:border-[#00a0dc] hover:shadow-sm'
+                                                        }`}
+                                                    whileHover={{ 
+                                                        scale: 1.05,
+                                                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                                                    }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                >
+                                                    <span className="block text-center font-medium">
+                                                        {subSlot.display_name}
+                                                    </span>
+                                                    
+                                                    {formData.sub_slot_id === subSlot.id && (
+                                                        <motion.div 
+                                                            className="absolute inset-0 bg-gradient-to-r from-[#00a0dc] to-[#0092c9] -z-10"
+                                                            animate={{ 
+                                                                backgroundPosition: ["0% center", "100% center"]
+                                                            }}
+                                                            transition={{ 
+                                                                duration: 3,
+                                                                repeat: Infinity,
+                                                                repeatType: "mirror"
+                                                            }}
+                                                        />
+                                                    )}
+                                                </motion.button>
+                                            ))}
+                                    </div>
+                                    
+                                    {dateAvailability.timeSlots
+                                        .find(slot => slot.id === formData.time_slot_id)?.subSlots
+                                        .filter(subSlot => subSlot.is_available).length === 0 && (
+                                        <div className="text-center bg-red-50 rounded-lg p-2">
+                                            <p className="text-red-500 text-xs font-medium">No available times in this slot.</p>
+                                            <p className="text-red-400 text-[10px] mt-1">Please select a different time slot.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                );
+                
+            case 3:
+                return (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="space-y-4"
+                    >
+                        <div className="bg-blue-50 p-2 rounded-lg mb-3">
+                            <div className="flex items-center mb-2">
+                                <FaRegCalendarAlt className="text-[#00a0dc] mr-2" />
+                                <h3 className="font-medium text-gray-800">Appointment Summary</h3>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <p className="text-gray-500">Date</p>
+                                    <p className="font-medium text-gray-800">
+                                        {new Date(formData.appointment_date + 'T00:00:00').toLocaleDateString('en-US', {
+                                            weekday: 'short',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500">Time</p>
+                                    <p className="font-medium text-gray-800">{formData.selected_time}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="flex items-center gap-1 text-gray-600 font-poppins mb-1 text-sm">
+                                <FaStickyNote className="text-[#00a0dc] text-xs" />
+                                Notes for your appointment <span className="text-[9px] text-gray-400 ml-1">(Optional)</span>
+                            </label>
+                            <textarea
+                                name="notes"
+                                value={formData.notes}
+                                onChange={handleInputChange}
+                                placeholder="Add any notes or special requests for your appointment"
+                                className={`w-full px-3 py-2 rounded-lg outline-none border border-gray-200 focus:border-[#00a0dc] transition-all duration-300 font-poppins text-gray-700`}
+                                rows="2"
+                            />
+                            
+                            {/* Recommendation chips - more compact styling */}
+                            <div className="mt-1 mb-2">
+                                <p className="text-xs text-gray-600 mb-1">Quick add to notes:</p>
+                                <div className="flex flex-wrap gap-1">
+                                    {["First visit", "Hearing test", "Hearing aid fitting", "Hearing aid repair", 
+                                      "Battery replacement", "Ear cleaning", "Tinnitus consultation", "Follow-up appointment"].map((suggestion, index) => (
+                                        <motion.button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => {
+                                                // Append suggestion to existing notes
+                                                const currentNotes = formData.notes.trim();
+                                                const newNotes = currentNotes 
+                                                    ? currentNotes + (currentNotes.endsWith('.') ? ' ' : '. ') + suggestion
+                                                    : suggestion;
+                                                setFormData(prev => ({ ...prev, notes: newNotes }));
+                                            }}
+                                            className="bg-blue-50 hover:bg-blue-100 text-[#00a0dc] border border-blue-200 rounded-full px-1.5 py-0.5 text-[10px]"
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.97 }}
+                                        >
+                                            + {suggestion}
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <p className="text-xs text-gray-500 mt-1">
+                                Please share any specific concerns or requirements you may have for your appointment.
+                            </p>
+                        </div>
+                    </motion.div>
+                );
+                
+            default:
+                return null;
+        }
+    };
+
+    // Add this CSS class within the component for consistent button styling
+    const buttonClasses = "w-full bg-[#00a0dc] hover:bg-[#0092c9] text-white py-3 rounded-lg transition-colors text-sm font-medium";
+    const backButtonClasses = "w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg transition-colors text-sm font-medium";
 
     return (
-        <div id="appointment-booking" className="relative w-full min-h-[500px] bg-gray-50 py-8">
+        <div id="appointment-booking" className="relative w-full min-h-[600px] bg-gray-50 py-8">
             {/* Background Image and Text Section */}
             <div className="absolute inset-0 w-full h-full">
                 <div className="relative w-full h-full">
@@ -443,305 +840,124 @@ const AppointmentBooking = () => {
                 </div>
             </div>
 
-            {/* Appointment Booking Card */}
+            {/* Appointment Booking Card - Fixed height with no scrollbar */}
             <div className="relative max-w-md mx-auto lg:ml-20 lg:mr-auto">
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="bg-white rounded-lg shadow-lg p-6 w-[460px] h-[560px]"
+                    className="bg-white rounded-lg shadow-lg p-5 w-[420px] h-[640px] flex flex-col overflow-hidden" // Increased height more and reduced padding
                 >
                     {!bookingSuccess ? (
                         <>
-                            <div className="flex flex-col h-full">
-                            <h2 className="text-2xl font-outfit font-bold text-center text-auralyellow">
-                                Schedule Your Appointment
-                            </h2>
-                            <p className="text-gray-600 text-center mb-6 font-poppins text-sm">
-                                Book your hearing consultation with our experts
-                            </p>
+                            <div className="flex-1 flex flex-col">
+                                <h2 className="text-2xl font-outfit font-bold text-center text-[#B4CC51]">
+                                    Schedule Your Appointment
+                                </h2>
+                                <p className="text-gray-600 text-center mb-3 font-poppins text-sm">
+                                    Book your hearing consultation with our experts
+                                </p>
 
                                 {/* Form Steps with Progress Line */}
-                                <div className="mb-6 relative">
+                                <div className="mb-5 relative">
                                     <div className="flex items-center justify-between relative">
                                         {/* Progress Line */}
                                         <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[2px] bg-gray-200">
                                             <div 
-                                                className="h-full bg-auralblue transition-all duration-300"
-                                                style={{ width: currentStep === 1 ? '0%' : '100%' }}
+                                                className="h-full bg-[#00a0dc] transition-all duration-300"
+                                                style={{ width: currentStep === 1 ? '0%' : currentStep === 2 ? '50%' : '100%' }}
                                             />
                                         </div>
                                         
                                         {/* Step Indicators */}
-                                    {[1, 2].map((step) => (
-                                        <div
-                                            key={step}
+                                        {[1, 2, 3].map((step) => (
+                                            <div
+                                                key={step}
                                                 className={`w-8 h-8 rounded-full flex items-center justify-center relative z-10 transition-all duration-300 ${
-                                                currentStep === step
-                                                        ? 'bg-auralblue text-white'
-                                                        : currentStep > step
-                                                    ? 'bg-auralblue text-white'
-                                                    : 'bg-gray-200 text-gray-600'
+                                                    currentStep === step
+                                                            ? 'bg-[#00a0dc] text-white'
+                                                            : currentStep > step
+                                                        ? 'bg-[#00a0dc] text-white'
+                                                        : 'bg-gray-200 text-gray-600'
                                                 }`}
-                                        >
-                                            {step}
-                                        </div>
-                                    ))}
+                                            >
+                                                {step}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-
-                                {/* Scrollable Content Area */}
-                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                            {currentStep === 1 ? (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="space-y-4 flex flex-col h-full"
-                                >
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-auralblue focus:border-auralblue text-sm"
-                                            placeholder="Enter your full name"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Age
-                                            </label>
-                                            <input
-                                                type="number"
-                                                name="age"
-                                                min="0"
-                                                max="120"
-                                                value={formData.age}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-auralblue focus:border-auralblue text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                placeholder="Enter your age"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Gender
-                                            </label>
-                                            <select
-                                                name="gender"
-                                                value={formData.gender}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border rounded-lg focus:ring-auralblue focus:border-auralblue text-sm bg-white"
-                                            >
-                                                <option value="">Select gender</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Phone Number
-                                        </label>
-                                        <PhoneInput
-                                            country={'in'}
-                                            value={formData.phone}
-                                            onChange={handlePhoneChange}
-                                            containerClass="w-full"
-                                            inputStyle={{ 
-                                                width: '100%',
-                                                height: '42px',
-                                                fontSize: '14px',
-                                                padding: '8px 12px 8px 48px',
-                                                borderRadius: '8px',
-                                                border: '1px solid #e5e7eb',
-                                                backgroundColor: 'white'
-                                            }}
-                                            buttonStyle={{
-                                                border: '1px solid #e5e7eb',
-                                                borderRadius: '8px 0 0 8px',
-                                                backgroundColor: 'white'
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email Address
-                                        </label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border rounded-lg focus:ring-auralblue focus:border-auralblue text-sm"
-                                            placeholder="Enter your email"
-                                        />
-                                    </div>
-
-                                    <div className="flex-grow"></div>
-
-                                    <button
-                                        onClick={handleNextStep}
-                                        className="w-full bg-auralblue text-white py-3 rounded-lg hover:bg-opacity-90 transition-colors text-sm mt-4"
-                                    >
-                                        Next
-                                    </button>
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="space-y-4 flex-1 flex flex-col"
-                                >
-                                    <div>
-                                        <label className={labelClasses}>
-                                            <FaRegCalendarAlt className="text-auralblue" />
-                                            Preferred Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            name="date"
-                                            value={formatDateForInput(formData.date)}
-                                            onChange={handleDateChange}
-                                            min={new Date().toISOString().split('T')[0]}
-                                            className={`${inputClasses} date-input-custom`}
-                                            pattern="\d{2}-\d{2}-\d{4}"
-                                        />
-                                        {dateError && (
-                                            <motion.p 
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                className='text-red-500 text-sm mt-1'
-                                            >
-                                                {dateError}
-                                            </motion.p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className={labelClasses}>
-                                            <FaRegClock className="text-auralblue" />
-                                            Select Time Slot
-                                        </label>
-                                        {!formData.date && (
-                                            <motion.p 
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                className='text-amber-500 text-sm mb-2'
-                                            >
-                                                Please select a date first to view available time slots
-                                            </motion.p>
-                                        )}
-                                        
-                                        {formData.date && !formData.selectedPeriod && (
-                                            <div className='grid grid-cols-3 gap-4'>
-                                                {timePeriods.map((period) => {
-                                                    const isDisabled = isTimePeriodDisabled(period.id);
-                                                    return (
-                                                        <motion.button
-                                                            key={period.id}
-                                                            type="button"
-                                                            onClick={() => !isDisabled && setFormData(prev => ({ ...prev, selectedPeriod: period.id, timeSlot: '' }))}
-                                                            className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-300 ${
-                                                                isDisabled 
-                                                                    ? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60' 
-                                                                    : 'border-gray-200 hover:border-auralblue bg-gray-50 hover:bg-gray-100'
-                                                            }`}
-                                                            whileHover={!isDisabled && { scale: 1.02 }}
-                                                            whileTap={!isDisabled && { scale: 0.98 }}
-                                                            disabled={isDisabled}
-                                                        >
-                                                            <span className="text-xl mb-1">{period.icon}</span>
-                                                            <span className={`font-medium ${isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>
-                                                                {period.label}
-                                                            </span>
-                                                            <span className={`text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
-                                                                {period.time}
-                                                            </span>
-                                                            {isDisabled && (
-                                                                <span className="text-xs text-red-400 mt-1">Not Available</span>
-                                                            )}
-                                                        </motion.button>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-
-                                        {formData.date && formData.selectedPeriod && (
-                                            <div className='space-y-3'>
-                                                <div className='flex items-center justify-between'>
-                                                    <h3 className='text-sm font-medium text-gray-700'>
-                                                        {timePeriods.find(p => p.id === formData.selectedPeriod)?.label} Slots
-                                                    </h3>
-                                                    <button 
-                                                        onClick={() => setFormData(prev => ({ ...prev, selectedPeriod: '', timeSlot: '' }))}
-                                                        className='text-[10px] text-auralblue hover:underline bg-white px-2 py-1 rounded-none hover:bg-white'
-                                                    >
-                                                        Change Time Period
-                                                    </button>
-                                                </div>
-                                                <div className='grid grid-cols-4 gap-2'>
-                                                    {timeSlots[formData.selectedPeriod].map((timeSlot, index) => (
-                                                        <motion.button
-                                                            key={index}
-                                                            type="button"
-                                                            onClick={() => setFormData(prev => ({ ...prev, timeSlot }))}
-                                                            className={`px-3 py-2 rounded-lg text-xs transition-all duration-300 font-poppins w-[90px]
-                                                                ${formData.timeSlot === timeSlot 
-                                                                    ? 'bg-auralblue text-white border-auralblue' 
-                                                                    : isTimeSlotDisabled(timeSlot)
-                                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                                        : 'bg-white text-gray-700 border border-gray-200 hover:border-auralblue hover:bg-auralblue hover:text-white'
-                                                                }`}
-                                                            disabled={isTimeSlotDisabled(timeSlot)}
-                                                            whileHover={!isTimeSlotDisabled(timeSlot) && { scale: 1.02 }}
-                                                            whileTap={!isTimeSlotDisabled(timeSlot) && { scale: 0.98 }}
-                                                        >
-                                                            {timeSlot}
-                                                        </motion.button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className='flex gap-4 mt-auto'>
-                                        <motion.button
-                                            type="button"
-                                            onClick={() => setCurrentStep(1)}
-                                            className='flex-1 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium transition-all duration-300 hover:bg-gray-200'
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
+                                
+                                {/* Form Content - WITH scrollbar for proper overflow handling */}
+                                <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
+                                    {renderStepContent()}
+                                </div>
+                                
+                                {/* Buttons consistently positioned at bottom */}
+                                <div className="mt-auto pt-2">
+                                    {currentStep === 1 ? (
+                                        <button
+                                            onClick={handleNextStep}
+                                            className={buttonClasses}
                                         >
-                                            Back
-                                        </motion.button>
-                                        <motion.button
-                                            type="button"
-                                            onClick={handleSubmit}
-                                            disabled={isSubmitting || !formData.date || !formData.timeSlot}
-                                            className='flex-1 py-4 bg-auralblue text-white rounded-xl font-medium transition-all duration-300 hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed'
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                        >
-                                            {isSubmitting ? 'Booking...' : 'Book Appointment'}
-                                        </motion.button>
-                                    </div>
-                                </motion.div>
-                            )}
+                                            Next
+                                        </button>
+                                    ) : currentStep === 2 ? (
+                                        <div className='flex gap-3'>
+                                            <motion.button
+                                                type="button"
+                                                onClick={handlePrevStep}
+                                                className={backButtonClasses}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                Back
+                                            </motion.button>
+                                            <motion.button
+                                                type="button"
+                                                onClick={handleNextStep}
+                                                disabled={!formData.appointment_date || !formData.time_slot_id || !formData.sub_slot_id}
+                                                className={`${buttonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                Next
+                                            </motion.button>
+                                        </div>
+                                    ) : (
+                                        <div className='flex gap-3'>
+                                            <motion.button
+                                                type="button"
+                                                onClick={handlePrevStep}
+                                                className={backButtonClasses}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                Back
+                                            </motion.button>
+                                            <motion.button
+                                                type="button"
+                                                onClick={handleSubmit}
+                                                disabled={isSubmitting}
+                                                className={`${buttonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                whileHover={{ scale: 1.03, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" }}
+                                                whileTap={{ scale: 0.97 }}
+                                            >
+                                                {isSubmitting ? (
+                                                    <span className="flex items-center justify-center">
+                                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                        </svg>
+                                                        Booking...
+                                                    </span>
+                                                ) : "Book Appointment"}
+                                            </motion.button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </>
                     ) : (
-                        <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
                         <SuccessScreen />
-                        </div>
                     )}
                 </motion.div>
             </div>

@@ -1,0 +1,395 @@
+## API Endpoints
+
+etrieves the current cart for the authenticated user or guest.
+
+- **URL**: `/api/cart`
+- **Method**: `GET`
+- **Authentication**: Optional
+- **Headers**:
+  - For authenticated users: `Authorization: Bearer <token>`
+  - For guest users: `x-session-token: <session-token>` (optional)
+
+For Guest -- Response
+{
+    "success": true,
+    "message": "Cart retrieved successfully",
+    "data": {
+        "id": "a973a7df-fb42-46ea-ac89-23cd9abe9d33",
+        "session_id": "22116b9d-62a5-4e49-a11d-a10a3490a7d7",
+        "session_token": "c5cebaee-705b-4b31-877f-e5b55f095eee",
+        "items": [
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 3,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "placeholder.jpg"
+            },
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 3,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742324668708-d217f475.png"
+            },
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 3,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742451702609-52e46b9f.png"
+            }
+        ],
+        "item_count": 3,
+        "subtotal": "4499.97",
+        "discount_amount": 0,
+        "tax_amount": "0.00",
+        "total": 0,
+        "coupon": null,
+        "is_guest": true
+    }
+}
+
+For Authenticated User --- Response
+
+{
+    "success": true,
+    "message": "Cart retrieved successfully",
+    "data": {
+        "id": "e1990ad3-699e-45cd-a502-7690ed878f32",
+        "user_id": "fc4558a4-2ef4-4dc3-9e1b-4752d3c498fd",
+        "items": [
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 9,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "placeholder.jpg"
+            },
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 9,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742324668708-d217f475.png"
+            },
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 9,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742451702609-52e46b9f.png"
+            }
+        ],
+        "item_count": 3,
+        "subtotal": "13499.91",
+        "discount_amount": 0,
+        "tax_amount": "0.00",
+        "total": 0,
+        "coupon": null,
+        "is_guest": false
+    }
+}
+
+
+After the cart session is created for the user the use user can add the items using this Endpoints
+
+Adds a product to the cart.
+
+- **URL**: `/api/cart/items`
+- **Method**: `POST`
+- **Authentication**: Optional
+- **Headers**:
+  - For authenticated users: `Authorization: Bearer <token>`
+  - For guest users: `x-session-token: <session-token>` (optional)
+- **Request Body**:
+  - `product_id` (required): UUID of the product to add
+  - `variant_id` (optional): UUID of the product variant
+  - `quantity` (optional): Number of items to add (default: 1)
+  - `custom_options` (optional): Custom options for the product
+
+#### Request Example
+
+```json
+{
+  "product_id": "7f4b1a43-8d6c-4d2e-a4fc-9eacb295c107",
+  "quantity": 2,
+  "custom_options": {
+    "color": "blue",
+    "size": "medium"
+  }
+}
+```
+
+For Guest ---
+{
+    "success": true,
+    "message": "Item added to cart",
+    "data": {
+        "id": "a973a7df-fb42-46ea-ac89-23cd9abe9d33",
+        "session_id": "22116b9d-62a5-4e49-a11d-a10a3490a7d7",
+        "session_token": "c5cebaee-705b-4b31-877f-e5b55f095eee",
+        "items": [
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 6,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "placeholder.jpg"
+            },
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 6,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742324668708-d217f475.png"
+            },
+            {
+                "id": "82f1acba-14a9-481c-864d-d43803d4e520",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 6,
+                "unit_price": "1499.99",
+                "total_price": "4499.97",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742451702609-52e46b9f.png"
+            }
+        ],
+        "item_count": 3,
+        "subtotal": "4499.97",
+        "discount_amount": 0,
+        "tax_amount": "0.00",
+        "total": 0,
+        "coupon": null,
+        "is_guest": true
+    }
+}
+
+For Authenticated --- 
+
+{
+    "success": true,
+    "message": "Item added to cart",
+    "data": {
+        "id": "e1990ad3-699e-45cd-a502-7690ed878f32",
+        "user_id": "fc4558a4-2ef4-4dc3-9e1b-4752d3c498fd",
+        "items": [
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 12,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "placeholder.jpg"
+            },
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 12,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742324668708-d217f475.png"
+            },
+            {
+                "id": "328fb691-4e12-4da5-8c47-7888bbc22fb2",
+                "product_id": "3bfd40fd-4e7f-41a3-ab04-b20379c2ceba",
+                "variant_id": null,
+                "quantity": 12,
+                "unit_price": "1499.99",
+                "total_price": "13499.91",
+                "product_name": "Hearing Care Pro X3",
+                "product_slug": "hearing-care-pro-x3",
+                "product_image": "http://localhost:9100/aural-product-images/1742451702609-52e46b9f.png"
+            }
+        ],
+        "item_count": 3,
+        "subtotal": "13499.91",
+        "discount_amount": 0,
+        "tax_amount": "0.00",
+        "total": 0,
+        "coupon": null,
+        "is_guest": false
+    }
+}
+
+and for updating the cart items
+
+### Update Cart Item
+
+Updates the quantity of an item in the cart.
+
+- **URL**: `/api/cart/items/:id`
+- **Method**: `PUT`
+- **Authentication**: Optional
+- **URL Parameters**:
+  - `id`: UUID of the cart item to update
+- **Headers**:
+  - For authenticated users: `Authorization: Bearer <token>`
+  - For guest users: `x-session-token: <session-token>` (optional)
+- **Request Body**:
+  - `quantity` (required): New quantity (set to 0 to remove the item)
+
+#### Request Example
+
+```json
+{
+  "quantity": 3
+}
+```
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "message": "Cart item updated",
+  "data": {
+    "id": "9d0b1126-75fe-4c02-8a4b-df24f4c3a9a0",
+    "product_id": "7f4b1a43-8d6c-4d2e-a4fc-9eacb295c107",
+    "variant_id": null,
+    "quantity": 3,
+    "unit_price": 99.99,
+    "total_price": 299.97
+  }
+}
+```
+
+### Remove Cart Item
+
+Removes an item from the cart.
+
+- **URL**: `/api/cart/items/:id`
+- **Method**: `DELETE`
+- **Authentication**: Optional
+- **URL Parameters**:
+  - `id`: UUID of the cart item to remove
+- **Headers**:
+  - For authenticated users: `Authorization: Bearer <token>`
+  - For guest users: `x-session-token: <session-token>` (optional)
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "message": "Item removed from cart",
+  "data": {
+    "id": "9d0b1126-75fe-4c02-8a4b-df24f4c3a9a0"
+  }
+}
+```
+
+### Clear Cart
+
+Removes all items from the cart.
+
+- **URL**: `/api/cart`
+- **Method**: `DELETE`
+- **Authentication**: Optional
+- **Headers**:
+  - For authenticated users: `Authorization: Bearer <token>`
+  - For guest users: `x-session-token: <session-token>` (optional)
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "message": "Cart cleared successfully",
+  "data": null
+}
+```
+
+
+now after these things when the after the user adds everything as guests and then user authenticates then it should be hit a request and then it should merge the guest cart to the normal authenticated user cart
+
+### Merge Carts
+
+Merges a guest cart with the authenticated user's cart. This is typically used after a guest user logs in.
+
+- **URL**: `/api/cart/merge`
+- **Method**: `POST`
+- **Authentication**: Required
+- **Headers**:
+  - `Authorization: Bearer <token>` (required)
+- **Request Body**:
+  - `session_token` (required): Session token of the guest cart to merge
+
+#### Request Example
+
+```json
+{
+  "session_token": "f56a7b8c-9d0e-1f2a-3b4c-5d6e7f8a9b0c"
+}
+```
+
+#### Response Example
+
+```json
+{
+  "success": true,
+  "message": "Carts merged successfully",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "items": [
+      {
+        "id": "9d0b1126-75fe-4c02-8a4b-df24f4c3a9a0",
+        "product_id": "7f4b1a43-8d6c-4d2e-a4fc-9eacb295c107",
+        "variant_id": null,
+        "quantity": 3,
+        "unit_price": 99.99,
+        "total_price": 299.97,
+        "product_name": "Premium Hearing Aid",
+        "product_slug": "premium-hearing-aid",
+        "product_image": "http://localhost:9100/aural-product-images/premium-hearing-aid.jpg"
+      }
+    ],
+    "item_count": 1,
+    "subtotal": 299.97,
+    "discount_amount": 0,
+    "tax_amount": 0,
+    "total": 299.97,
+    "is_guest": false,
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+}
+```

@@ -43,32 +43,42 @@ export default async function handler(req, res) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user with profile
+    // Create user first
     const user = await prisma.User.create({
       data: {
         email,
         password: hashedPassword,
         name: `${first_name} ${last_name}`,
-        profile: {
-          create: {
-            first_name,
-            last_name,
-            gender,
-            mobile,
-            alternate_mobile: alternate_mobile || '',
-            country: country || '',
-            address: address || '',
-            default_address: default_address || false,
-          }
-        }
-      },
-      include: {
-        profile: true
       }
     });
 
+    // Then create profile separately to ensure it's created
+    const profile = await prisma.Profile.create({
+      data: {
+        userId: user.id,
+        first_name,
+        last_name,
+        gender: gender || 'other',
+        mobile,
+        alternate_mobile: alternate_mobile || '',
+        country: country || '',
+        address: address || '',
+        default_address: default_address || false,
+      }
+    });
+
+    // Get the complete user with profile
+    const completeUser = await prisma.User.findUnique({
+      where: { id: user.id },
+      include: { profile: true }
+    });
+
+    // Log the created data for debugging
+    console.log('User created:', { id: user.id, email: user.email });
+    console.log('Profile created:', { id: profile.id, userId: profile.userId });
+
     // Remove sensitive data before sending response
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = completeUser;
 
     return res.status(201).json({
       message: 'User created successfully',

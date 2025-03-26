@@ -1,55 +1,46 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import { FaStar } from 'react-icons/fa';
-import assets from '../../../public/assets/assets';
-
+import { FaStar, FaSpinner } from 'react-icons/fa';
+import Link from 'next/link';
+import Image from 'next/image';
+import useProducts from '@/hooks/useProducts';
 
 const ProductSlider = () => {
-  const products = [
-    {
-      id: 1,
-      image: assets.product_1,
-      name: 'Phonak Product 1',
-      price: '₹9999',
-      review: 4,
-    },
-    {
-      id: 2,
-      image: assets.product_2,
-      name: 'Phonak Product 2',
-      price: '₹19999',
-      review: 5,
-    },
-    {
-      id: 3,
-      image: assets.product_3,
-      name: 'Phonak Product 3',
-      price: '₹19200',
-      review: 5,
-    },
-    {
-      id: 4,
-      image: assets.product_4,
-      name: 'Phonak Product 4',
-      price: '₹55999',
-      review: 5,
-    },
-    {
-      id: 5,
-      image: assets.product_5,
-      name: 'Phonak Product 5',
-      price: '₹25999',
-      review: 5,
-    },
-    // Add more products as needed
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { fetchProducts, formatPrice, getImageUrl } = useProducts();
+
+  useEffect(() => {
+    // Fetch featured products on component mount
+    const loadFeaturedProducts = async () => {
+      setLoading(true);
+      try {
+        const { success, data } = await fetchProducts({ 
+          is_featured: true, 
+          limit: 8,
+          sort: 'created_at',
+          order: 'desc'
+        });
+        
+        if (success && data?.products) {
+          setFeaturedProducts(data.products);
+        }
+      } catch (error) {
+        console.error('Error loading featured products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadFeaturedProducts();
+  }, [fetchProducts]);
 
   const settings = {
-    dots: false,
-    infinite: true,
+    dots: true,
+    infinite: featuredProducts.length > 3,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -71,34 +62,68 @@ const ProductSlider = () => {
     ],
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <FaSpinner className="animate-spin text-4xl text-auralblue" />
+      </div>
+    );
+  }
+
+  if (featuredProducts.length === 0) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-gray-600 font-poppins">No featured products available</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-screen-lg">
       <Slider {...settings}>
-        {products.map((product) => (
+        {featuredProducts.map((product) => (
           <div key={product.id} className="p-4">
-            <div className="bg-white shadow-md rounded-lg overflow-hidden">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-48 w-full object-fit"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-bold mb-2 font-poppins">{product.name}</h3>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xl font-semibold text-gray-800 font-poppins">{product.price}</p>
+            <div className="bg-white shadow-md rounded-lg overflow-hidden h-full flex flex-col">
+              <div className="relative h-48 w-full">
+                <Image
+                  src={getImageUrl(product)}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  onError={(e) => {
+                    e.target.src = '/assets/product_1.avif';
+                  }}
+                />
+              </div>
+              <div className="p-4 flex flex-col flex-grow">
+                <h3 className="text-lg font-bold mb-2 font-poppins line-clamp-2">{product.name}</h3>
+                {product.brand_name && (
+                  <p className="text-sm text-auralblue mb-2 font-poppins">{product.brand_name}</p>
+                )}
+                <div className="flex items-center justify-between mb-2 mt-auto">
+                  <p className="text-xl font-semibold text-gray-800 font-poppins">
+                    {formatPrice(product.discounted_price || product.price)}
+                  </p>
                   <div className="flex items-center">
                     {Array.from({ length: 5 }, (_, index) => (
                       <FaStar
                         key={index}
-                        className={`text-sm flex gap-1 ml-1  ${index < product.review ? 'text-yellow-500' : 'text-gray-300'}`}
+                        className={`text-sm flex gap-1 ml-1 ${
+                          index < Math.floor(product.rating_average || 0) 
+                            ? 'text-yellow-500' 
+                            : 'text-gray-300'
+                        }`}
                       />
                     ))}
                   </div>
                 </div>
                 <div className='flex flex-row items-center justify-center w-full'>
-                <button className="mt-4  bg-auralyellow text-center text-white py-2 px-24 font-montserrat rounded-lg transition">
-                  Buy Now
-                </button>
+                  <Link href={`/products/${product.id}`} className="w-full">
+                    <button className="mt-4 w-full bg-auralyellow text-center text-white py-2 font-medium font-poppins rounded-lg transition hover:bg-amber-500">
+                      View Details
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

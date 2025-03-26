@@ -66,6 +66,7 @@ const TopbarBelow = () => {
                         <span className='ml-2 text-white font-outfit text-xl font-medium'>+91 98234 49422 </span>
                     </div>
                 </div>
+
             </div>
 
 

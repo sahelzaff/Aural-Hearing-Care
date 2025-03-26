@@ -1,25 +1,37 @@
 'use client';
 
-import dynamic from 'next/dynamic'
-import { useState, useEffect } from 'react';
-import LoadingScreen from '../LoadingScreen';
+import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 
-const Navbar = dynamic(() => import('./Navbar'), { ssr: false })
+// Dynamically import Navbar with no SSR to prevent hydration issues
+const Navbar = dynamic(() => import('./Navbar'), { ssr: false });
 
+// Simple wrapper component that conditionally renders the Navbar
 const ClientNavbar = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading time (you can remove this in production)
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
-  return <Navbar />;
-}
+    const [isMounted, setIsMounted] = useState(false);
+    const pathname = usePathname();
+    
+    // Only render on client side
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+    
+    // Don't render on login or signup pages
+    const isAuthPage = pathname === '/login' || pathname === '/signup';
+    
+    if (!isMounted) {
+        return null; // Return null on server-side
+    }
+    
+    // Skip rendering on auth pages
+    if (isAuthPage) {
+        return null;
+    }
+    
+    return (
+        <Navbar />
+    );
+};
 
 export default ClientNavbar;

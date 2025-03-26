@@ -1,0 +1,1021 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaUser, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaEdit, FaKey, FaShieldAlt, FaTimes, FaCheck, FaSignOutAlt, FaMobileAlt, FaDesktop, FaLaptop, FaTabletAlt, FaBirthdayCake } from 'react-icons/fa';
+import { MdVerified } from 'react-icons/md';
+import { toast } from 'react-hot-toast';
+import TopbarBelow from '@/Components/Global Components/TopbarBelow';
+import Navbar from '@/Components/Global Components/Navbar';
+import Footer from '@/Components/Global Components/Footer';
+import LoadingScreen from '@/Components/LoadingScreen';
+import Breadcrumbs from '@/Components/Global Components/Breadcrumbs';
+import axios from 'axios';
+import { getAuthToken } from '@/utils/auth';
+
+// Auth and User Service URLs
+const AUTH_SERVER_URL = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || 'http://localhost:5004';
+const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://localhost:5003';
+
+export default function MyInfoPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('personal');
+  const [isLoading, setIsLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    alternatePhone: '',
+    gender: '',
+    country: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    dateOfBirth: '',
+    bio: '',
+  });
+
+  // Session management states
+  const [sessions, setSessions] = useState([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+  const [isRevokingSession, setIsRevokingSession] = useState(false);
+
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = getAuthToken();
+      
+      if (!token) {
+        // Store the current path to redirect back after login
+        localStorage.setItem('redirectAfterLogin', '/my-info');
+        toast.error('Please sign in to access your account');
+        router.push('/login');
+      } else {
+        // Fetch user data if authenticated
+        fetchUserData();
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+
+  // Fetch user data from API
+  const fetchUserData = async () => {
+    setIsLoading(true);
+    try {
+      const token = getAuthToken();
+      
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      // Fetch user profile from user service
+      const response = await axios.get(`${USER_SERVICE_URL}/users/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.success) {
+        const { profile, user } = response.data.data;
+        
+        // Format the data from the API response
+        const formattedUserData = {
+          id: user.id,
+          firstName: user.first_name || '',
+          lastName: user.last_name || '',
+          email: user.email || '',
+          phone: user.phone_number || '',
+          alternatePhone: profile?.alternate_phone || '',
+          gender: profile?.gender || '',
+          country: profile?.country || '',
+          address: profile?.address || '',
+          city: profile?.city || '',
+          state: profile?.state || '',
+          pincode: profile?.pincode || '',
+          dateOfBirth: profile?.date_of_birth || '',
+          bio: profile?.bio || '',
+          profilePicture: profile?.profile_picture_url || '',
+          joinedDate: new Date(user.created_at).toISOString().split('T')[0] || '',
+          lastLogin: new Date().toISOString().split('T')[0],
+          orders: 0,
+          wishlist: 0,
+          emailVerified: user.is_verified || false,
+          phoneVerified: false,
+        };
+        
+        setUserData(formattedUserData);
+        setFormData({
+          firstName: formattedUserData.firstName,
+          lastName: formattedUserData.lastName,
+          email: formattedUserData.email,
+          phone: formattedUserData.phone,
+          alternatePhone: formattedUserData.alternatePhone,
+          gender: formattedUserData.gender,
+          country: formattedUserData.country,
+          address: formattedUserData.address,
+          city: formattedUserData.city,
+          state: formattedUserData.state,
+          pincode: formattedUserData.pincode,
+          dateOfBirth: formattedUserData.dateOfBirth,
+          bio: formattedUserData.bio,
+        });
+      } else {
+        throw new Error('Failed to fetch user data');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      toast.error('Failed to load profile data. Please try again.');
+      
+      // Redirect to login if authentication error
+      if (error.response?.status === 401) {
+        localStorage.setItem('redirectAfterLogin', '/my-info');
+        router.push('/login');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const token = getAuthToken();
+      
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      // Prepare the data to update
+      const updateData = {
+        user: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone_number: formData.phone
+        },
+        profile: {
+          date_of_birth: formData.dateOfBirth,
+          gender: formData.gender,
+          bio: formData.bio,
+          country: formData.country,
+          address: formData.address,
+          alternate_phone: formData.alternatePhone
+        }
+      };
+      
+      // Make the update request
+      const response = await axios.put(
+        `${USER_SERVICE_URL}/users/profile`,
+        updateData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.data.success) {
+        toast.success('Profile updated successfully');
+        
+        // Update local state with the response
+        const { profile, user } = response.data.data;
+        
+        setUserData(prev => ({
+          ...prev,
+          firstName: user.first_name || formData.firstName,
+          lastName: user.last_name || formData.lastName,
+          email: user.email || formData.email,
+          phone: user.phone_number || formData.phone,
+          alternatePhone: profile?.alternate_phone || formData.alternatePhone,
+          gender: profile?.gender || formData.gender,
+          country: profile?.country || formData.country,
+          address: profile?.address || formData.address,
+          dateOfBirth: profile?.date_of_birth || formData.dateOfBirth,
+          bio: profile?.bio || formData.bio
+        }));
+        
+        setIsEditing(false);
+      } else {
+        toast.error('Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Updated motion config for cards
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 100,
+        damping: 20,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  // Add these animation variants
+  const tabVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { type: "spring", stiffness: 300 }
+    },
+    active: {
+      scale: 1.05,
+      color: "#2d79f3",
+      borderBottom: "2px solid #2d79f3"
+    }
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  };
+
+  // Fetch active sessions
+  const fetchActiveSessions = async () => {
+    setIsLoadingSessions(true);
+    try {
+      const accessToken = getAuthToken();
+      
+      if (!accessToken) {
+        toast.error("Authentication token not found");
+        return;
+      }
+      
+      const response = await axios.get(`${AUTH_SERVER_URL}/sessions`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data.success) {
+        setSessions(response.data.data.sessions);
+      } else {
+        toast.error("Failed to fetch sessions");
+      }
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+      // Only show toast message, don't redirect on this error
+      // This way the user can still use the profile page even if session fetching fails
+      toast.error("Couldn't load active sessions");
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  };
+
+  // Revoke a specific session
+  const revokeSession = async (sessionId) => {
+    setIsRevokingSession(true);
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      
+      if (!accessToken) {
+        toast.error("Authentication token not found");
+        return;
+      }
+      
+      const response = await axios.delete(`${AUTH_SERVER_URL}/sessions/${sessionId}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data.success) {
+        toast.success("Session revoked successfully");
+        fetchActiveSessions(); // Refresh the sessions list
+      } else {
+        toast.error("Failed to revoke session");
+      }
+    } catch (error) {
+      console.error('Error revoking session:', error);
+      toast.error(error.response?.data?.message || "An error occurred while revoking the session");
+    } finally {
+      setIsRevokingSession(false);
+    }
+  };
+
+  // Revoke all sessions except current
+  const revokeAllSessions = async () => {
+    setIsRevokingSession(true);
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      
+      if (!accessToken) {
+        toast.error("Authentication token not found");
+        return;
+      }
+      
+      const response = await axios.delete(`${AUTH_SERVER_URL}/sessions`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data.success) {
+        toast.success("All sessions revoked successfully");
+        fetchActiveSessions(); // Refresh the sessions list
+      } else {
+        toast.error("Failed to revoke all sessions");
+      }
+    } catch (error) {
+      console.error('Error revoking all sessions:', error);
+      toast.error(error.response?.data?.message || "An error occurred while revoking sessions");
+    } finally {
+      setIsRevokingSession(false);
+    }
+  };
+
+  // Fetch sessions when security tab is activated
+  useEffect(() => {
+    if (activeTab === 'security') {
+      fetchActiveSessions();
+    }
+  }, [activeTab]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <>
+      <TopbarBelow />
+      <Navbar />
+      
+      <div className="bg-gray-50 min-h-screen pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.4, 
+              delay: 0.2,
+              type: "spring",
+              stiffness: 300,
+              damping: 20
+            }}
+            className="mb-4 border-b border-gray-200 py-2"
+          >
+            <Breadcrumbs items={[
+              { href: "/", label: "Home" },
+              { label: "My Account" }
+            ]} />
+            <h1 className="text-2xl font-bold text-auralblue font-outfit mb-1">Account Overview</h1>
+            <p className="text-sm text-gray-600 font-poppins">Manage your personal information and security settings</p>
+          </motion.div>
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Sidebar */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:w-1/4"
+            >
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6 bg-auralblue text-white">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white">
+                      <FaUser size={24} />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold font-outfit">{userData?.firstName || 'User'} {userData?.lastName || ''}</h2>
+                      <p className="text-sm opacity-80 font-poppins">{userData?.email || 'Loading...'}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <nav className="p-4">
+                  <ul className="space-y-1">
+                    <li>
+                      <button
+                        onClick={() => setActiveTab('personal')}
+                        className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                          activeTab === 'personal' 
+                            ? 'bg-auralblue/10 text-auralblue font-medium' 
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <FaUser className="flex-shrink-0" />
+                        <span>Personal Information</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => setActiveTab('address')}
+                        className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                          activeTab === 'address' 
+                            ? 'bg-auralblue/10 text-auralblue font-medium' 
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <FaMapMarkerAlt className="flex-shrink-0" />
+                        <span>Addresses</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => setActiveTab('security')}
+                        className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                          activeTab === 'security' 
+                            ? 'bg-auralblue/10 text-auralblue font-medium' 
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <FaShieldAlt className="flex-shrink-0" />
+                        <span>Security & Sessions</span>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+                
+                <div className="p-4 border-t border-gray-100">
+                  <div className="flex flex-col space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Member since</span>
+                      <span className="font-medium">{userData?.joinedDate ? new Date(userData.joinedDate).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Last login</span>
+                      <span className="font-medium">{userData?.lastLogin ? new Date(userData.lastLogin).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                <h3 className="font-medium text-gray-900 mb-4">Account Overview</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-auralblue">{userData?.orders || 0}</div>
+                    <div className="text-sm text-gray-600">Orders</div>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-auralblue">{userData?.wishlist || 0}</div>
+                    <div className="text-sm text-gray-600">Wishlist</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Main Content */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="lg:w-3/4"
+            >
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-900 font-outfit">
+                    {activeTab === 'personal' && 'Personal Information'}
+                    {activeTab === 'address' && 'Address Information'}
+                    {activeTab === 'security' && 'Security Settings'}
+                  </h2>
+                  
+                  {(activeTab === 'personal' || activeTab === 'address') && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="flex items-center space-x-2 text-auralblue hover:text-auralblue/80 transition-colors"
+                    >
+                      {isEditing ? <FaTimes /> : <FaEdit />}
+                      <span>{isEditing ? 'Cancel' : 'Edit'}</span>
+                    </motion.button>
+                  )}
+                </div>
+                
+                <AnimatePresence mode="wait">
+                  {activeTab === 'personal' && (
+                    <motion.div
+                      key="personal"
+                      initial="hidden"
+                      animate="visible"
+                      variants={cardVariants}
+                      className="bg-white rounded-lg shadow-sm overflow-hidden"
+                    >
+                      {!isEditing ? (
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaUser />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Full Name</h3>
+                                <p className="text-gray-600">{userData?.firstName || 'Not provided'} {userData?.lastName || ''}</p>
+                              </div>
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaEnvelope />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Email</h3>
+                                <p className="text-gray-600">{userData?.email || 'Not provided'}</p>
+                                {userData?.emailVerified && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
+                                    <MdVerified className="mr-1" /> Verified
+                                  </span>
+                                )}
+                              </div>
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaPhoneAlt />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Phone Number</h3>
+                                <p className="text-gray-600">{userData?.phone || 'Not provided'}</p>
+                              </div>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaPhoneAlt />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Alternate Phone</h3>
+                                <p className="text-gray-600">{userData?.alternatePhone || 'Not provided'}</p>
+                              </div>
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaBirthdayCake />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Date of Birth</h3>
+                                <p className="text-gray-600">{userData?.dateOfBirth || 'Not provided'}</p>
+                              </div>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaUser />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Gender</h3>
+                                <p className="text-gray-600">{userData?.gender ? userData.gender.charAt(0).toUpperCase() + userData.gender.slice(1) : 'Not specified'}</p>
+                              </div>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="md:col-span-2 flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaUser />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="text-lg font-medium text-gray-900">Bio</h3>
+                                <p className="text-gray-600">{userData?.bio || 'No bio provided'}</p>
+                              </div>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaMapMarkerAlt />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Country</h3>
+                                <p className="text-gray-600">{userData?.country || 'Not specified'}</p>
+                              </div>
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                              <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                                <FaMapMarkerAlt />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Address</h3>
+                                <p className="text-gray-600">{userData?.address || 'No address provided'}</p>
+                              </div>
+                            </motion.div>
+                          </div>
+                        </div>
+                      ) : (
+                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
+                              <input
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                              />
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
+                              <input
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                                required
+                              />
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+                              <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                                required
+                              />
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
+                              <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                                required
+                              />
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="alternatePhone" className="block text-sm font-medium text-gray-700">Alternate Phone</label>
+                              <input
+                                type="tel"
+                                id="alternatePhone"
+                                name="alternatePhone"
+                                value={formData.alternatePhone}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                              />
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
+                              <select
+                                id="gender"
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                              >
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                              </select>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="space-y-2">
+                              <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
+                              <input
+                                type="text"
+                                id="country"
+                                name="country"
+                                value={formData.country}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                              />
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="space-y-2 md:col-span-2">
+                              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+                              <textarea
+                                id="address"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                rows={3}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-auralblue focus:ring-auralblue sm:text-sm"
+                              />
+                            </motion.div>
+                          </div>
+                          
+                          <motion.div variants={itemVariants} className="flex justify-end">
+                            <button
+                              type="submit"
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-auralblue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-auralblue"
+                            >
+                              Save Changes
+                            </button>
+                          </motion.div>
+                        </form>
+                      )}
+                    </motion.div>
+                  )}
+                  
+                  {activeTab === 'address' && (
+                    <motion.div
+                      key="address"
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      variants={containerVariants}
+                      className="p-6"
+                    >
+                      {isEditing ? (
+                        <form onSubmit={handleSubmit}>
+                          <div className="grid grid-cols-1 gap-6">
+                            <motion.div variants={itemVariants}>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                              <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-auralblue focus:border-transparent"
+                                required
+                              />
+                            </motion.div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <motion.div variants={itemVariants}>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                <input
+                                  type="text"
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleInputChange}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-auralblue focus:border-transparent"
+                                  required
+                                />
+                              </motion.div>
+                              
+                              <motion.div variants={itemVariants}>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                <input
+                                  type="text"
+                                  name="state"
+                                  value={formData.state}
+                                  onChange={handleInputChange}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-auralblue focus:border-transparent"
+                                  required
+                                />
+                              </motion.div>
+                              
+                              <motion.div variants={itemVariants}>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                                <input
+                                  type="text"
+                                  name="pincode"
+                                  value={formData.pincode}
+                                  onChange={handleInputChange}
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-auralblue focus:border-transparent"
+                                  required
+                                />
+                              </motion.div>
+                            </div>
+                          </div>
+                          
+                          <motion.div 
+                            variants={itemVariants}
+                            className="mt-6 flex justify-end"
+                          >
+                            <button
+                              type="submit"
+                              className="px-6 py-2 bg-auralblue text-white rounded-lg hover:bg-auralblue/90 transition-colors"
+                            >
+                              Save Changes
+                            </button>
+                          </motion.div>
+                        </form>
+                      ) : (
+                        <div className="space-y-6">
+                          <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                            <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                              <FaMapMarkerAlt />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-medium text-gray-900">Delivery Address</h3>
+                              <p className="text-gray-600">{userData.address}</p>
+                              <p className="text-gray-600">
+                                {userData?.city || ''}{userData?.city && userData?.state ? ', ' : ''}
+                                {userData?.state || ''} {userData?.pincode || ''}
+                              </p>
+                            </div>
+                          </motion.div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                  
+                  {activeTab === 'security' && (
+                    <motion.div
+                      key="security"
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      variants={containerVariants}
+                      className="p-6"
+                    >
+                      <div className="space-y-8">
+                        <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                          <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                            <FaKey />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Password</h3>
+                                <p className="text-gray-600">Last changed 3 months ago</p>
+                              </div>
+                              <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                Change Password
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                        
+                        <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                          <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                            <FaShieldAlt />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Two-Factor Authentication</h3>
+                                <p className="text-gray-600">Add an extra layer of security to your account</p>
+                              </div>
+                              <button className="px-4 py-2 bg-auralblue text-white rounded-lg hover:bg-auralblue/90 transition-colors">
+                                Enable
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                        
+                        {/* Active Sessions Section */}
+                        <motion.div variants={itemVariants} className="mt-8 border-t pt-8">
+                          <div className="flex justify-between items-center mb-6">
+                            <div>
+                              <h3 className="text-xl font-medium text-gray-900">Active Sessions</h3>
+                              <p className="text-gray-600 text-sm">Devices currently signed in to your account</p>
+                            </div>
+                            <button 
+                              onClick={revokeAllSessions}
+                              disabled={isRevokingSession}
+                              className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                              {isRevokingSession ? (
+                                <>
+                                  <svg className="animate-spin h-4 w-4 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <FaSignOutAlt />
+                                  Sign Out All Devices
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          
+                          {isLoadingSessions ? (
+                            <div className="flex justify-center items-center py-12">
+                              <svg className="animate-spin h-8 w-8 text-auralblue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            </div>
+                          ) : sessions.length === 0 ? (
+                            <div className="bg-gray-50 rounded-lg p-6 text-center">
+                              <p className="text-gray-600">No active sessions found</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {sessions.map((session) => (
+                                <div key={session.id} className="bg-white border rounded-lg p-4 flex items-start justify-between">
+                                  <div className="flex items-start space-x-4">
+                                    <div className="mt-1">
+                                      {session.device.toLowerCase().includes('mobile') ? (
+                                        <FaMobileAlt size={20} className="text-gray-500" />
+                                      ) : session.device.toLowerCase().includes('tablet') ? (
+                                        <FaTabletAlt size={20} className="text-gray-500" />
+                                      ) : (
+                                        <FaDesktop size={20} className="text-gray-500" />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-medium">{session.device}</h4>
+                                      <div className="text-sm text-gray-500">
+                                        <p>IP: {session.ip_address}</p>
+                                        <p>Last active: {new Date(session.last_active).toLocaleString()}</p>
+                                        {session.is_current && (
+                                          <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Current Session
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {!session.is_current && (
+                                    <button
+                                      onClick={() => revokeSession(session.id)}
+                                      disabled={isRevokingSession}
+                                      className="ml-4 text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {isRevokingSession ? 'Revoking...' : 'Revoke'}
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </motion.div>
+                        
+                        <motion.div variants={itemVariants} className="flex items-start space-x-4">
+                          <div className="w-10 h-10 rounded-full bg-auralblue/10 flex items-center justify-center text-auralblue">
+                            <FaEnvelope />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="text-lg font-medium text-gray-900">Email Verification</h3>
+                                <p className="text-gray-600">{userData?.emailVerified ? 'Your email has been verified' : 'Please verify your email'}</p>
+                              </div>
+                              <div className="flex items-center">
+                                {userData?.emailVerified ? (
+                                  <span className="flex items-center text-green-600">
+                                    <MdVerified className="mr-1" /> Verified
+                                  </span>
+                                ) : (
+                                  <button className="px-4 py-2 bg-auralblue text-white rounded-lg hover:bg-auralblue/90 transition-colors">
+                                    Verify Email
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </>
+  );
+} 
