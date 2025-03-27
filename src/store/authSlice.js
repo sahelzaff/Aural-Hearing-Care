@@ -20,6 +20,10 @@ export const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
+// Rename and export the login action as reduxLogin
+export const { login: reduxLogin, logout } = authSlice.actions;
+
+// Also keep the original name for backward compatibility
+export const { login, logout: reduxLogout } = authSlice.actions;
 
 export default authSlice.reducer;

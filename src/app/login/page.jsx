@@ -13,11 +13,22 @@ import { AiFillApple } from 'react-icons/ai';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import { setAuthToken, triggerAuthStateChange, clearAuthTokens, getDeviceInfo } from '@/utils/auth';
 import useCart from '@/hooks/useCart';
+import SearchParamsProvider from '@/components/SearchParamsProvider';
 
 // Auth server base URL
 const AUTH_SERVER_URL = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || 'http://localhost:5004';
 
-export default function Login() {
+// Main Login component wrapped in Suspense
+export default function LoginPage() {
+  return (
+    <SearchParamsProvider>
+      <Login />
+    </SearchParamsProvider>
+  );
+}
+
+// Actual Login component implementation
+function Login() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-50 to-indigo-50 relative overflow-hidden">
             {/* Back to homepage link */}

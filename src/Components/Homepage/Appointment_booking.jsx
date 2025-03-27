@@ -69,19 +69,19 @@ const AppointmentBooking = () => {
         const inputDate = value; // YYYY-MM-DD format from input
         
         if (name === 'appointment_date') {
-            const selectedDate = new Date(inputDate);
-            const today = new Date();
-            
-            today.setHours(0, 0, 0, 0);
-            
-            if (selectedDate < today) {
-                setDateError('Please select a future date');
+        const selectedDate = new Date(inputDate);
+        const today = new Date();
+        
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            setDateError('Please select a future date');
                 setFormData(prev => ({ ...prev, appointment_date: '' }));
                 setDateAvailability(null);
-                return;
-            }
-            
-            setDateError('');
+            return;
+        }
+        
+        setDateError('');
             setFormData(prev => ({ 
                 ...prev, 
                 appointment_date: inputDate,
@@ -234,20 +234,20 @@ const AppointmentBooking = () => {
                 console.log("Extracted booking ID:", bookingId);
                 
                 // Store booking details for confirmation with correct booking ID
-                setLastBookingDetails({
-                    ...formData,
+            setLastBookingDetails({
+                ...formData,
                     bookingId: bookingId,
                     time_slot: result.data?.appointment?.time_slot || result.data?.appointment?.appointment?.time_slot || {},
                     sub_slot: result.data?.appointment?.sub_slot || result.data?.appointment?.appointment?.sub_slot || {}
-                });
+            });
 
-                setBookingSuccess(true);
+            setBookingSuccess(true);
 
-                toast.success('Appointment Booked Successfully!', {
-                    duration: 4000,
-                    position: 'top-center',
-                    icon: '🎉'
-                });
+            toast.success('Appointment Booked Successfully!', {
+                duration: 4000,
+                position: 'top-center',
+                icon: '🎉'
+            });
             } else {
                 toast.error(result.message || 'Failed to book appointment');
             }
@@ -267,17 +267,17 @@ const AppointmentBooking = () => {
             className="text-center h-full flex flex-col justify-between py-3"
         >
             <div>
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20 
-                    }}
+            <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ 
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20 
+                }}
                     className="relative w-24 h-24 mx-auto mb-4"
-                >
-                    <motion.div 
+            >
+                    <motion.div
                         initial={{ scale: 0.8, opacity: 0.5 }}
                         animate={{ 
                             scale: [0.8, 1.1, 0.9, 1],
@@ -292,18 +292,18 @@ const AppointmentBooking = () => {
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                         <FaCheck className="text-green-500 text-4xl" />
-                    </div>
-                </motion.div>
+                </div>
+            </motion.div>
 
-                <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                     className="mb-4"
-                >
+            >
                     <h2 className="text-2xl font-bold text-gray-800 mb-1 font-outfit">Booking Confirmed!</h2>
                     <p className="text-gray-600 font-poppins text-sm">Your appointment has been successfully scheduled.</p>
-                </motion.div>
+            </motion.div>
             </div>
 
             <motion.div
@@ -343,7 +343,7 @@ const AppointmentBooking = () => {
                         <div className="flex items-center">
                             <FaRegEnvelope className="text-[#00a0dc] mr-2" />
                             <span className="font-medium text-sm">Email Sent</span>
-                        </div>
+                </div>
                         <span className="text-gray-500 text-xs truncate mt-1">
                             Confirmation sent to {lastBookingDetails.email}
                         </span>
@@ -353,7 +353,7 @@ const AppointmentBooking = () => {
                         <div className="col-span-2 flex flex-col bg-gray-50 p-3 rounded-lg">
                             <span className="text-gray-500 text-xs">Notes</span>
                             <span className="font-medium text-gray-800 text-sm mt-1">"{lastBookingDetails.notes}"</span>
-                        </div>
+                </div>
                     )}
                 </div>
             </motion.div>
@@ -379,22 +379,22 @@ const AppointmentBooking = () => {
     const renderStepContent = () => {
         switch(currentStep) {
             case 1:
-                return (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+    return (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
                         className="space-y-3"
-                    >
+                                >
                         <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
                                     First Name
-                                </label>
-                                <input
-                                    type="text"
+                                        </label>
+                                        <input
+                                            type="text"
                                     name="first_name"
                                     value={formData.first_name}
-                                    onChange={handleInputChange}
+                                            onChange={handleInputChange}
                                     className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
                                     placeholder="Enter first name"
                                 />
@@ -418,18 +418,18 @@ const AppointmentBooking = () => {
                                     <p className="text-red-500 text-xs mt-1">{errorMessages.last_name}</p>
                                 )}
                             </div>
-                        </div>
+                                    </div>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Date of Birth
-                                </label>
-                                <input
+                                            </label>
+                                            <input
                                     type="date"
                                     name="date_of_birth"
                                     value={formData.date_of_birth}
-                                    onChange={handleInputChange}
+                                                onChange={handleInputChange}
                                     max={new Date().toISOString().split('T')[0]} // Set max to today
                                     className={`w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm ${
                                         errorMessages.date_of_birth ? 'border-red-500' : 'border-gray-200'
@@ -438,73 +438,73 @@ const AppointmentBooking = () => {
                                 {errorMessages.date_of_birth && (
                                     <p className="text-red-500 text-xs mt-1">{errorMessages.date_of_birth}</p>
                                 )}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Gender
-                                </label>
-                                <select
-                                    name="gender"
-                                    value={formData.gender}
-                                    onChange={handleInputChange}
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Gender
+                                            </label>
+                                            <select
+                                                name="gender"
+                                                value={formData.gender}
+                                                onChange={handleInputChange}
                                     className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm bg-white"
-                                >
-                                    <option value="">Select gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
+                                            >
+                                                <option value="">Select gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
                                 {errorMessages.gender && (
                                     <p className="text-red-500 text-xs mt-1">{errorMessages.gender}</p>
                                 )}
-                            </div>
-                        </div>
+                                        </div>
+                                    </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number
-                            </label>
-                            <PhoneInput
-                                country={'in'}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Phone Number
+                                        </label>
+                                        <PhoneInput
+                                            country={'in'}
                                 value={formData.phone_number}
-                                onChange={handlePhoneChange}
-                                containerClass="w-full"
-                                inputStyle={{ 
-                                    width: '100%',
+                                            onChange={handlePhoneChange}
+                                            containerClass="w-full"
+                                            inputStyle={{ 
+                                                width: '100%',
                                     height: '38px',
-                                    fontSize: '14px',
-                                    padding: '8px 12px 8px 48px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #e5e7eb',
-                                    backgroundColor: 'white'
-                                }}
-                                buttonStyle={{
-                                    border: '1px solid #e5e7eb',
-                                    borderRadius: '8px 0 0 8px',
-                                    backgroundColor: 'white'
-                                }}
-                            />
+                                                fontSize: '14px',
+                                                padding: '8px 12px 8px 48px',
+                                                borderRadius: '8px',
+                                                border: '1px solid #e5e7eb',
+                                                backgroundColor: 'white'
+                                            }}
+                                            buttonStyle={{
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px 0 0 8px',
+                                                backgroundColor: 'white'
+                                            }}
+                                        />
                             {errorMessages.phone_number && (
                                 <p className="text-red-500 text-xs mt-1">{errorMessages.phone_number}</p>
                             )}
-                        </div>
+                                    </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
                                 className="w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm"
-                                placeholder="Enter your email"
-                            />
+                                            placeholder="Enter your email"
+                                        />
                             {errorMessages.email && (
                                 <p className="text-red-500 text-xs mt-1">{errorMessages.email}</p>
                             )}
-                        </div>
+                                    </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -522,22 +522,22 @@ const AppointmentBooking = () => {
                                 <p className="text-red-500 text-xs mt-1">{errorMessages.address}</p>
                             )}
                         </div>
-                    </motion.div>
+                                </motion.div>
                 );
                 
             case 2:
                 return (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
                         className="space-y-3"
-                    >
-                        <div>
+                                >
+                                    <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Appointment Date
-                            </label>
-                            <input
-                                type="date"
+                                        </label>
+                                        <input
+                                            type="date"
                                 name="appointment_date"
                                 value={formData.appointment_date}
                                 onChange={handleInputChange}
@@ -545,27 +545,27 @@ const AppointmentBooking = () => {
                                 className={`w-full px-3 py-2 border rounded-lg focus:ring-[#00a0dc] focus:border-[#00a0dc] text-sm ${
                                     dateError ? 'border-red-500' : 'border-gray-200'
                                 }`}
-                            />
-                            {dateError && (
+                                        />
+                                        {dateError && (
                                 <p className="text-red-500 text-xs mt-1">{dateError}</p>
-                            )}
-                        </div>
+                                        )}
+                                    </div>
 
-                        <div>
-                            <label className={labelClasses}>
+                                    <div>
+                                        <label className={labelClasses}>
                                 <FaRegClock className="text-[#00a0dc]" />
-                                Select Time Slot
-                            </label>
+                                            Select Time Slot
+                                        </label>
                             {!formData.appointment_date && (
-                                <motion.p 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
+                                            <motion.p 
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
                                     className='text-amber-500 text-xs mb-2'
-                                >
-                                    Please select a date first to view available time slots
-                                </motion.p>
-                            )}
-                            
+                                            >
+                                                Please select a date first to view available time slots
+                                            </motion.p>
+                                        )}
+                                        
                             {formData.appointment_date && !dateAvailability && loading && (
                                 <div className="flex justify-center py-4">
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00a0dc]"></div>
@@ -583,13 +583,13 @@ const AppointmentBooking = () => {
                                         const isDisabled = isTimeSlotDisabled(slot);
                                         const availableCount = slot.subSlots.filter(subSlot => subSlot.is_available).length;
                                         
-                                        return (
-                                            <motion.button
+                                                    return (
+                                                        <motion.button
                                                 key={slot.id}
-                                                type="button"
+                                                            type="button"
                                                 onClick={() => !isDisabled && handleTimeSlotSelect(slot.id)}
                                                 className={`group relative overflow-hidden flex items-center justify-between p-2 rounded-lg border transition-all duration-300 ${
-                                                    isDisabled 
+                                                                isDisabled 
                                                         ? 'border-gray-200 bg-gray-100 cursor-not-allowed' 
                                                         : formData.time_slot_id === slot.id
                                                             ? 'border-[#00a0dc] bg-gradient-to-r from-blue-50 to-indigo-50'
@@ -599,9 +599,9 @@ const AppointmentBooking = () => {
                                                     scale: 1.02,
                                                     transition: { duration: 0.2 } 
                                                 }}
-                                                whileTap={!isDisabled && { scale: 0.98 }}
-                                                disabled={isDisabled}
-                                            >
+                                                            whileTap={!isDisabled && { scale: 0.98 }}
+                                                            disabled={isDisabled}
+                                                        >
                                                 <div className="flex items-center">
                                                     <span className={`flex items-center justify-center w-7 h-7 rounded-full mr-2 ${
                                                         isDisabled 
@@ -613,10 +613,10 @@ const AppointmentBooking = () => {
                                                     <div className="flex flex-col items-start">
                                                         <span className={`font-medium text-sm ${isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>
                                                             {slot.slot_name.charAt(0).toUpperCase() + slot.slot_name.slice(1)}
-                                                        </span>
-                                                        <span className={`text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                            </span>
+                                                            <span className={`text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
                                                             {slot.start_time.substring(0, 5)} - {slot.end_time.substring(0, 5)}
-                                                        </span>
+                                                            </span>
                                                     </div>
                                                 </div>
                                                 
@@ -637,20 +637,20 @@ const AppointmentBooking = () => {
                                                         whileHover={{ x: "100%" }}
                                                         transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
                                                     />
-                                                )}
-                                            </motion.button>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                                            )}
+                                                        </motion.button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
 
                             {dateAvailability && formData.time_slot_id && (
                                 <div className='space-y-2 mt-3 pt-2 border-t border-gray-100'>
-                                    <div className='flex items-center justify-between'>
+                                                <div className='flex items-center justify-between'>
                                         <h3 className='text-sm font-medium text-gray-700 flex items-center'>
                                             <FaRegClock className="text-[#00a0dc] mr-2 text-xs" />
                                             Available Times
-                                        </h3>
+                                                    </h3>
                                         <motion.button 
                                             onClick={() => setFormData(prev => ({ ...prev, time_slot_id: '', sub_slot_id: '', selected_time: '' }))}
                                             className='text-xs text-[#00a0dc] hover:underline flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full'
@@ -662,16 +662,16 @@ const AppointmentBooking = () => {
                                             </svg>
                                             Change
                                         </motion.button>
-                                    </div>
+                                                </div>
                                     
                                     <div className='grid grid-cols-3 gap-1'>
                                         {dateAvailability.timeSlots
                                             .find(slot => slot.id === formData.time_slot_id)?.subSlots
                                             .filter(subSlot => subSlot.is_available)
                                             .map((subSlot) => (
-                                                <motion.button
+                                                        <motion.button
                                                     key={subSlot.id}
-                                                    type="button"
+                                                            type="button"
                                                     onClick={() => handleSubSlotSelect(subSlot)}
                                                     className={`relative overflow-hidden p-2 rounded-lg text-xs transition-all duration-300 font-poppins
                                                         ${formData.sub_slot_id === subSlot.id
@@ -701,9 +701,9 @@ const AppointmentBooking = () => {
                                                             }}
                                                         />
                                                     )}
-                                                </motion.button>
-                                            ))}
-                                    </div>
+                                                        </motion.button>
+                                                    ))}
+                                                </div>
                                     
                                     {dateAvailability.timeSlots
                                         .find(slot => slot.id === formData.time_slot_id)?.subSlots
@@ -711,9 +711,9 @@ const AppointmentBooking = () => {
                                         <div className="text-center bg-red-50 rounded-lg p-2">
                                             <p className="text-red-500 text-xs font-medium">No available times in this slot.</p>
                                             <p className="text-red-400 text-[10px] mt-1">Please select a different time slot.</p>
-                                        </div>
-                                    )}
-                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                             )}
                         </div>
                     </motion.div>
@@ -906,22 +906,22 @@ const AppointmentBooking = () => {
                                                 type="button"
                                                 onClick={handlePrevStep}
                                                 className={backButtonClasses}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                            >
-                                                Back
-                                            </motion.button>
-                                            <motion.button
-                                                type="button"
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            Back
+                                        </motion.button>
+                                        <motion.button
+                                            type="button"
                                                 onClick={handleNextStep}
                                                 disabled={!formData.appointment_date || !formData.time_slot_id || !formData.sub_slot_id}
                                                 className={`${buttonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                            >
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
                                                 Next
-                                            </motion.button>
-                                        </div>
+                                        </motion.button>
+                                    </div>
                                     ) : (
                                         <div className='flex gap-3'>
                                             <motion.button
@@ -952,7 +952,7 @@ const AppointmentBooking = () => {
                                                 ) : "Book Appointment"}
                                             </motion.button>
                                         </div>
-                                    )}
+                            )}
                                 </div>
                             </div>
                         </>

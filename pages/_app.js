@@ -7,6 +7,22 @@ import '../src/app/globals.css';
 // Import AuthContext from the separate file
 import AuthContext from '../src/context/AuthContext';
 
+// Safe localStorage access
+const getStorageItem = (key) => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(key);
+};
+
+const setStorageItem = (key, value) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(key, value);
+};
+
+const removeStorageItem = (key) => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(key);
+};
+
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +31,7 @@ function MyApp({ Component, pageProps }) {
   // Set up axios interceptors and fetch user on mount
   useEffect(() => {
     // Debug token storage
-    const token = localStorage.getItem('authToken') || localStorage.getItem('access_token');
+    const token = getStorageItem('authToken') || getStorageItem('access_token');
     console.log('_app.js - Token in localStorage:', token ? `${token.substring(0, 10)}...` : 'No token');
     
     // Configure axios defaults
@@ -25,7 +41,7 @@ function MyApp({ Component, pageProps }) {
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         // Get the token from localStorage on each request to ensure we have the latest
-        const token = localStorage.getItem('authToken');
+        const token = getStorageItem('authToken');
         if (token) {
           console.log('Adding token to request:', config.url);
           config.headers.Authorization = `Bearer ${token}`;
@@ -56,7 +72,7 @@ function MyApp({ Component, pageProps }) {
             !router.pathname.includes('/verify-email')
           ) {
             toast.error('Session expired. Please log in again.');
-            localStorage.removeItem('authToken');
+            removeStorageItem('authToken');
             setUser(null); // Ensure user state is cleared
             router.push('/login');
           }
@@ -69,7 +85,7 @@ function MyApp({ Component, pageProps }) {
     const fetchCurrentUser = async () => {
       try {
         // Get the token from localStorage
-        const token = localStorage.getItem('authToken') || localStorage.getItem('access_token');
+        const token = getStorageItem('authToken') || getStorageItem('access_token');
         
         // If no token, we're not authenticated
         if (!token) {
@@ -117,14 +133,16 @@ function MyApp({ Component, pageProps }) {
             
             // If both fail, assume token is invalid
             console.error('All API endpoints failed, clearing token');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            removeStorageItem('authToken');
+            removeStorageItem('access_token');
+            removeStorageItem('refresh_token');
             setUser(null);
             
             // Trigger auth state update
-            window.dispatchEvent(new Event('storage'));
-            window.dispatchEvent(new CustomEvent('authChange'));
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new Event('storage'));
+              window.dispatchEvent(new CustomEvent('authChange'));
+            }
           }
         }
       } catch (error) {
@@ -137,7 +155,7 @@ function MyApp({ Component, pageProps }) {
     
     // Function to handle authentication state changes
     const handleAuthChange = () => {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('access_token');
+      const token = getStorageItem('authToken') || getStorageItem('access_token');
       console.log('_app.js - Auth state changed, token:', token ? `${token.substring(0, 10)}...` : 'No token');
       
       // If token is gone but we have a user, logout
@@ -153,18 +171,24 @@ function MyApp({ Component, pageProps }) {
       }
     };
     
-    // Listen for storage events
-    window.addEventListener('storage', handleAuthChange);
-    // Listen for custom auth events
-    window.addEventListener('authChange', handleAuthChange);
+    // Only add event listeners on the client
+    if (typeof window !== 'undefined') {
+      // Listen for storage events
+      window.addEventListener('storage', handleAuthChange);
+      // Listen for custom auth events
+      window.addEventListener('authChange', handleAuthChange);
     
-    // Clean up
-    return () => {
-      window.removeEventListener('storage', handleAuthChange);
-      window.removeEventListener('authChange', handleAuthChange);
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
-    };
+      // Initial fetch
+      fetchCurrentUser();
+
+      // Clean up
+      return () => {
+        window.removeEventListener('storage', handleAuthChange);
+        window.removeEventListener('authChange', handleAuthChange);
+        axios.interceptors.request.eject(requestInterceptor);
+        axios.interceptors.response.eject(responseInterceptor);
+      };
+    }
   }, [router, user]);
   
   // Function to check the authentication state and update it if needed
@@ -175,7 +199,7 @@ function MyApp({ Component, pageProps }) {
       return;
     }
     
-    const token = localStorage.getItem('authToken');
+    const token = getStorageItem('authToken');
     
     if (token && !user) {
       console.log('Token found but user not set, fetching user data');
@@ -193,7 +217,7 @@ function MyApp({ Component, pageProps }) {
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
-        localStorage.removeItem('authToken');
+        removeStorageItem('authToken');
       }
     } else if (!token && user) {
       console.log('Token not found but user is set, clearing user state');
@@ -203,7 +227,9 @@ function MyApp({ Component, pageProps }) {
   
   // Check authentication state on mount and when the route changes
   useEffect(() => {
-    checkAuthState();
+    if (typeof window !== 'undefined') {
+      checkAuthState();
+    }
   }, [router.pathname]);
   
   // Monitor changes to user state
@@ -227,7 +253,7 @@ function MyApp({ Component, pageProps }) {
       console.log('Login response:', response.data);
       
       if (response.data.success && response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
+        setStorageItem('authToken', response.data.token);
         console.log('Setting user state after login:', response.data.user);
         setUser(response.data.user);
         return true;
@@ -242,13 +268,13 @@ function MyApp({ Component, pageProps }) {
   
   const logout = () => {
     console.log('Logging out user');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('tempPassword');
+    removeStorageItem('authToken');
+    removeStorageItem('userEmail');
+    removeStorageItem('tempPassword');
     setUser(null);
     console.log('User state cleared after logout');
     
-    // Redirect to login page with a logout parameter to prevent auto-login
+    // Redirect to login page
     router.push('/login?logout=true');
   };
   
@@ -262,12 +288,12 @@ function MyApp({ Component, pageProps }) {
       
       if (response.data.success && response.data.token) {
         // Store token in localStorage
-        localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userEmail', userData.email);
+        setStorageItem('authToken', response.data.token);
+        setStorageItem('userEmail', userData.email);
         
         // Store password temporarily for automatic login after verification
         if (userData.password) {
-          localStorage.setItem('tempPassword', userData.password);
+          setStorageItem('tempPassword', userData.password);
         }
         
         // Set the user state with the user data from the response
@@ -304,13 +330,13 @@ function MyApp({ Component, pageProps }) {
         console.log('Email verification successful');
         
         // Get the token from localStorage
-        const token = localStorage.getItem('authToken');
+        const token = getStorageItem('authToken');
         
         if (!token) {
           console.log('No token found after verification, attempting login');
           
           // Try to log in with stored credentials
-          const password = localStorage.getItem('tempPassword');
+          const password = getStorageItem('tempPassword');
           if (email && password) {
             try {
               console.log('Attempting login after verification');
@@ -319,7 +345,7 @@ function MyApp({ Component, pageProps }) {
               console.log('Login response after verification:', loginResponse.data);
               
               if (loginResponse.data.success && loginResponse.data.token) {
-                localStorage.setItem('authToken', loginResponse.data.token);
+                setStorageItem('authToken', loginResponse.data.token);
                 console.log('Setting user state after verification login:', loginResponse.data.user);
                 setUser(loginResponse.data.user);
                 
@@ -362,7 +388,7 @@ function MyApp({ Component, pageProps }) {
             console.log('User state updated after verification');
             
             // Clean up temporary password
-            localStorage.removeItem('tempPassword');
+            removeStorageItem('tempPassword');
             
             return true;
           } else {
@@ -386,7 +412,7 @@ function MyApp({ Component, pageProps }) {
   const authContextValue = {
     user,
     loading,
-    isAuthenticated: !!user || !!(localStorage.getItem('authToken') || localStorage.getItem('access_token')),
+    isAuthenticated: !!user || !!(getStorageItem('authToken') || getStorageItem('access_token')),
     login,
     logout,
     register,

@@ -1,38 +1,62 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
-  // Get the session to check authentication
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session) {
-    return res.status(401).json({ message: "You must be logged in." });
-  }
-
-  // Get user ID from session
-  const userId = session.user.id;
-
-  if (!userId) {
-    return res.status(400).json({ message: "User ID not found in session" });
-  }
-
+// Custom auth middleware to verify the token
+async function verifyToken(req) {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return null;
+    }
+
+    // Retrieve user from database based on token
+    // This is a simplified example - you should implement proper token verification
+    // based on your Express microservice authentication system
+    const user = await prisma.User.findFirst({
+      where: { 
+        authToken: token,
+        // Add any other conditions for token validation
+      }
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Token verification error:", error);
+    return null;
+  }
+}
+
+export default async function handler(req, res) {
+  try {
+    // Verify authentication
+    const user = await verifyToken(req);
+
+    if (!user) {
+      return res.status(401).json({ message: "You must be logged in." });
+    }
+
+    // Get user ID from authenticated user
+    const userId = user.id;
+
     // Handle GET request - fetch user profile
     if (req.method === 'GET') {
-      const user = await prisma.User.findUnique({
+      const userWithProfile = await prisma.User.findUnique({
         where: { id: userId },
         include: { profile: true }
       });
 
-      if (!user) {
+      if (!userWithProfile) {
         return res.status(404).json({ message: "User not found" });
       }
 
       // Remove sensitive data
-      const { password, ...userWithoutPassword } = user;
+      const { password, ...userWithoutPassword } = userWithProfile;
       
       return res.status(200).json(userWithoutPassword);
     }

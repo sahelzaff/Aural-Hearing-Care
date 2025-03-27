@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { SessionProvider } from 'next-auth/react';
 import { store } from '../store/store';
 import { Toaster } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
+import SearchParamsProvider from '../components/SearchParamsProvider';
 
 // Dynamically import loader components
 const FullPageLoader = dynamic(() => import('../Components/Loaders/FullPageLoader'), { ssr: false });
@@ -17,6 +18,15 @@ const TopbarBelow = dynamic(() => import('../Components/Global Components/Topbar
 const ClientNavbar = dynamic(() => import('../Components/Global Components/ClientNavbar'), { ssr: false });
 const Footer = dynamic(() => import('../Components/Global Components/Footer'), { ssr: false });
 
+// Component that uses search params, separated to be wrapped in Suspense
+function NavigationAwareProvider({ children }) {
+  // Track URL changes to show loader during navigation
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  return children({ pathname, searchParams });
+}
+
 export function Providers({ children }) {
   // State for initial page load
   const [initialLoading, setInitialLoading] = useState(true);
@@ -24,10 +34,8 @@ export function Providers({ children }) {
   // State for page transitions
   const [navigationLoading, setNavigationLoading] = useState(false);
   
-  // Track URL changes to show loader during navigation
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const prevPathRef = useRef(pathname);
+  // Refs for tracking navigation
+  const prevPathRef = useRef(null);
   const loadingStartTimeRef = useRef(null);
   const minLoaderDisplayTime = 400; // Minimum time to show loader (ms)
   
@@ -40,27 +48,6 @@ export function Providers({ children }) {
     
     return () => clearTimeout(timer);
   }, []);
-  
-  // Detect when components have actually mounted/updated
-  useEffect(() => {
-    // Only run this effect once the app has initially loaded
-    if (initialLoading) return;
-    
-    // Check if this is a navigation (not initial load)
-    if (prevPathRef.current !== pathname) {
-      // Start the loader with a small delay to avoid flash for instant loads
-      const startLoadingTimer = setTimeout(() => {
-        loadingStartTimeRef.current = Date.now();
-        setNavigationLoading(true);
-      }, 50);
-      
-      // Update the previous path reference
-      prevPathRef.current = pathname;
-      
-      // Clean up
-      return () => clearTimeout(startLoadingTimer);
-    }
-  }, [pathname, initialLoading]);
   
   // Setup DOM mutation observer to detect when content has loaded
   useEffect(() => {
@@ -104,6 +91,27 @@ export function Providers({ children }) {
     };
   }, [navigationLoading, initialLoading]);
 
+  // Handler for navigation changes
+  const handleNavigation = ({ pathname }) => {
+    // Only run this handler once the app has initially loaded
+    if (initialLoading) return;
+    
+    // Check if this is a navigation (not initial load)
+    if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
+      // Start the loader with a small delay to avoid flash for instant loads
+      const startLoadingTimer = setTimeout(() => {
+        loadingStartTimeRef.current = Date.now();
+        setNavigationLoading(true);
+      }, 50);
+      
+      // Clean up
+      return () => clearTimeout(startLoadingTimer);
+    }
+    
+    // Update the previous path reference
+    prevPathRef.current = pathname;
+  };
+
   return (
     <SessionProvider>
       <Provider store={store}>
@@ -119,20 +127,32 @@ export function Providers({ children }) {
           size="md" 
         />
         
-        {/* Only render content after initial load completes */}
-        {!initialLoading && (
-          <>
-            {/* Global navigation components */}
-            <TopbarBelow />
-            <ClientNavbar />
-            
-            {/* Main content */}
-            {children}
-            
-            {/* Global footer */}
-            <Footer />
-          </>
-        )}
+        {/* Wrap search params usage in Suspense boundary */}
+        <SearchParamsProvider>
+          <NavigationAwareProvider>
+            {({ pathname, searchParams }) => {
+              // Use the navigation handler with the pathname
+              useEffect(() => {
+                handleNavigation({ pathname });
+              }, [pathname]);
+              
+              // Only render content after initial load completes
+              return !initialLoading && (
+                <>
+                  {/* Global navigation components */}
+                  <TopbarBelow />
+                  <ClientNavbar />
+                  
+                  {/* Main content */}
+                  {children}
+                  
+                  {/* Global footer */}
+                  <Footer />
+                </>
+              );
+            }}
+          </NavigationAwareProvider>
+        </SearchParamsProvider>
       </Provider>
     </SessionProvider>
   );
