@@ -13,7 +13,7 @@ import { AiFillApple } from 'react-icons/ai';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import { setAuthToken, triggerAuthStateChange, clearAuthTokens, getDeviceInfo } from '@/utils/auth';
 import useCart from '@/hooks/useCart';
-import SearchParamsProvider from '@/components/SearchParamsProvider';
+import SearchParamsProvider from '@/Components/SearchParamsProvider';
 
 // Auth server base URL
 const AUTH_SERVER_URL = process.env.NEXT_PUBLIC_AUTH_SERVER_URL || 'http://localhost:5004';

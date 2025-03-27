@@ -7,7 +7,7 @@ import { store } from '../store/store';
 import { Toaster } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
-import SearchParamsProvider from '../components/SearchParamsProvider';
+import SearchParamsProvider from '../Components/SearchParamsProvider';
 
 // Dynamically import loader components
 const FullPageLoader = dynamic(() => import('../Components/Loaders/FullPageLoader'), { ssr: false });

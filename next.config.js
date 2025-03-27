@@ -1,54 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   images: {
-    domains: ['ucarecdn.com'],
-    unoptimized: true
-  },
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false };
-    return config;
-  },
-  swcMinify: true,
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    domains: ['localhost', 'test.api.auralhearingcare.com', 'api.auralhearingcare.com'],
+    deviceSizes: [640, 768, 1024, 1280, 1536],
+    formats: ['image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    // This helps avoid prerendering errors for pages that need browser APIs
-    appDir: true,
-  },
-  // Disable static generation for pages that use browser APIs
-  staticPageGenerationTimeout: 120,
-  staticGeneration: {
-    // Disable static generation for paths that cause errors
-    excludedPaths: [
-      '/_not-found',
-      '/_error',
-      '/404',
-      '/500',
-      '/login',
-      '/signup',
-      '/verify-email',
-      '/my-info',
-      '/checkout',
-      '/checkout/confirmation',
-      '/checkout/payment',
-      '/cart',
-      '/wishlist',
-      '/About-us',
-      '/blog',
-      '/contact',
-      '/services',
-      '/products',
-      '/online-hearing-test',
-      '/'
-    ]
-  }
-}
+  // Configure Netlify output
+  distDir: '.next'
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
